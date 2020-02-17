@@ -14,4 +14,16 @@ internal static class NetworkSend_Client
         
         buffer.Dispose();
     }
+    
+    public static void SendCurrentLocation(float x, float y, float z)
+    {
+        ByteBuffer buffer = new ByteBuffer(4);
+        buffer.WriteInt32((int)ClientPackets.UPDATE_LOCATION);
+        buffer.WriteSingle(x);
+        buffer.WriteSingle(y);
+        buffer.WriteSingle(z);
+        NetworkConfig_Client.socket.SendData(buffer.Data, buffer.Head);
+        
+        buffer.Dispose();
+    }
 }

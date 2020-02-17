@@ -1,4 +1,6 @@
-﻿using KaymakNetwork.Network;
+﻿using System;
+using KaymakNetwork.Network;
+using UnityEngine;
 
 internal static class NetworkConfig_Server
 {

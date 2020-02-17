@@ -7,7 +7,8 @@ using UnityEngine;
 public class NetworkManager_Client : MonoBehaviour
 {
     public GameObject playerPrefab;
-    
+
+    public int connectionID;
     public static NetworkManager_Client instance;
     
     private void Awake()
@@ -29,10 +30,12 @@ public class NetworkManager_Client : MonoBehaviour
         NetworkConfig_Client.DisconnectFromServer();
     }
 
-    public void InitNetworkPlayer(int connectionID)
+    public void InitNetworkPlayer(int connectionID, bool currentPlayer)
     {
         GameObject go = Instantiate(playerPrefab);
         go.name = "Player: " + connectionID;
+
+        if (currentPlayer) GameManager_Client.instance.LONScript.enabled = true;
         
         GameManager_Client.instance.playerList.Add(connectionID, go);
     }

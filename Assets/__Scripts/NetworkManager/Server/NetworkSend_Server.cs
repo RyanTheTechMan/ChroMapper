@@ -1,4 +1,5 @@
-﻿using KaymakNetwork;
+﻿using System;
+using KaymakNetwork;
 using UnityEngine;
 
 internal class NetworkSend_Server
@@ -7,6 +8,7 @@ internal class NetworkSend_Server
     {
         ByteBuffer buffer = new ByteBuffer(4);
         buffer.WriteInt32((int)ServerPackets.WELCOME_MSG);
+        buffer.WriteInt32(connectionID);
         buffer.WriteString(msg);
         NetworkConfig_Server.socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
         buffer.Dispose();
@@ -37,5 +39,22 @@ internal class NetworkSend_Server
         ByteBuffer buf = PlayerData(connectionID, player);
         NetworkConfig_Server.socket.SendDataToAll(buf.Data, buf.Head);
         buf.Dispose();
+    }
+    
+    public static void SendPlayerMove(int connectionID, float x, float y, float z)
+    {
+        ByteBuffer buffer = new ByteBuffer(4);
+        buffer.WriteInt32((int)ServerPackets.PLAYER_MOVE);
+        buffer.WriteSingle(x);
+        buffer.WriteSingle(y);
+        buffer.WriteSingle(z);
+        NetworkConfig_Server.socket.SendDataToAllBut(connectionID,buffer.Data, buffer.Head);
+        buffer.Dispose();
+    }
+    
+    [Obsolete("Use 'x y z' instead.", false)]
+    public static void SendPlayerMove(int connectionID, Vector3 loc)
+    {
+        SendPlayerMove(connectionID, loc.x, loc.y, loc.z);
     }
 }
