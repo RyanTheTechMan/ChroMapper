@@ -15,11 +15,11 @@ public class Player_Server
         NetworkSend_Server.SendPlayerMove(connectionID, x,y,z);
     }
 
-    public void TryToRotate(float x, float y, float z)
+    public void TryToRotate(float x, float y, float z, float w)
     {
         Quaternion rot = Quaternion.Euler(x,y,z);
         rotation = rot;
 
-        NetworkSend_Server.SendPlayerRotate(connectionID, x,y,z);
+        NetworkSend_Server.SendPlayerRotate(connectionID, x,y,z, w);
     }
 }

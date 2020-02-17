@@ -27,13 +27,14 @@ internal static class NetworkSend_Client
         buffer.Dispose();
     }
 
-    public static void SendCurrentRotation(float x, float y, float z)
+    public static void SendCurrentRotation(float x, float y, float z, float w)
     {
         ByteBuffer buffer = new ByteBuffer(4);
         buffer.WriteInt32((int)ClientPackets.UPDATE_ROTATION);
         buffer.WriteSingle(x);
         buffer.WriteSingle(y);
         buffer.WriteSingle(z);
+        buffer.WriteSingle(w);
         NetworkConfig_Client.socket.SendData(buffer.Data, buffer.Head);
         
         buffer.Dispose();

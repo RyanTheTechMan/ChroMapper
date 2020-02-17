@@ -41,10 +41,11 @@ internal static class NetworkRecieve_Server
         float x = buffer.ReadSingle();
         float y = buffer.ReadSingle();
         float z = buffer.ReadSingle();
+        float w = buffer.ReadSingle();
 
         buffer.Dispose();
 
         Player_Server ps = GameManager_Server.playerList[connectionID];
-        ps.TryToRotate(x,y,z);
+        ps.TryToRotate(x,y,z,w);
     }
 }

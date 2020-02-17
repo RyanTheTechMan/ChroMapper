@@ -19,7 +19,7 @@ public class SendLocationOverNetwork : MonoBehaviour
         Quaternion rot = transform.rotation;
         if (rot.normalized != lastRot.normalized) //If you want, check to see if player position was minimal.
         {
-            NetworkSend_Client.SendCurrentRotation(rot.x,rot.y,rot.z);
+            NetworkSend_Client.SendCurrentRotation(rot.x,rot.y,rot.z, rot.w);
             lastRot = rot;
         }
     }

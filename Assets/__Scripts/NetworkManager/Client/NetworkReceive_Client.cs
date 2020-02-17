@@ -55,10 +55,11 @@ internal static class NetworkReceive_Client
         float x = buffer.ReadSingle();
         float y = buffer.ReadSingle();
         float z = buffer.ReadSingle();
+        float w = buffer.ReadSingle();
         buffer.Dispose();
 
         if(!GameManager_Client.instance.playerList.ContainsKey(connectionID)) return;
         
-        GameManager_Client.instance.playerList[connectionID].transform.rotation = Quaternion.Euler(x,y,z);
+        GameManager_Client.instance.playerList[connectionID].transform.rotation = new Quaternion(x,y,z, w);
     }
 }

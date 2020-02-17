@@ -59,7 +59,7 @@ internal class NetworkSend_Server
         SendPlayerMove(connectionID, loc.x, loc.y, loc.z);
     }
 
-    public static void SendPlayerRotate(int connectionID, float x, float y, float z)
+    public static void SendPlayerRotate(int connectionID, float x, float y, float z, float w)
     {
         ByteBuffer buffer = new ByteBuffer(4);
         buffer.WriteInt32((int)ServerPackets.PLAYER_ROTATE);
@@ -67,6 +67,7 @@ internal class NetworkSend_Server
         buffer.WriteSingle(x);
         buffer.WriteSingle(y);
         buffer.WriteSingle(z);
+        buffer.WriteSingle(w);
         NetworkConfig_Server.socket.SendDataToAllBut(connectionID, buffer.Data, buffer.Head);
         buffer.Dispose();
     }
