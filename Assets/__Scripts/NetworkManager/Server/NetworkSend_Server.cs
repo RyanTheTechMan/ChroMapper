@@ -45,10 +45,11 @@ internal class NetworkSend_Server
     {
         ByteBuffer buffer = new ByteBuffer(4);
         buffer.WriteInt32((int)ServerPackets.PLAYER_MOVE);
+        buffer.WriteInt32(connectionID);
         buffer.WriteSingle(x);
         buffer.WriteSingle(y);
         buffer.WriteSingle(z);
-        NetworkConfig_Server.socket.SendDataToAllBut(connectionID,buffer.Data, buffer.Head);
+        NetworkConfig_Server.socket.SendDataToAllBut(connectionID, buffer.Data, buffer.Head);
         buffer.Dispose();
     }
     
