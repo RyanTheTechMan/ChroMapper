@@ -7,6 +7,7 @@ internal static class NetworkRecieve_Server
     {
         NetworkConfig_Server.socket.PacketId[(int) ClientPackets.PING] = Packet_Ping;
         NetworkConfig_Server.socket.PacketId[(int) ClientPackets.UPDATE_LOCATION] = Packet_UpdatePlayerLocation;
+        NetworkConfig_Server.socket.PacketId[(int) ClientPackets.UPDATE_ROTATION] = Packet_UpdatePlayerRotation;
     }
 
     private static void Packet_Ping(int connectionID, ref byte[] data)
@@ -32,5 +33,18 @@ internal static class NetworkRecieve_Server
 
         Player_Server ps = GameManager_Server.playerList[connectionID];
         ps.TryToMove(x,y,z);
+    }
+    
+    private static void Packet_UpdatePlayerRotation(int connectionID, ref byte[] data)
+    {
+        ByteBuffer buffer = new ByteBuffer(data);
+        float x = buffer.ReadSingle();
+        float y = buffer.ReadSingle();
+        float z = buffer.ReadSingle();
+
+        buffer.Dispose();
+
+        Player_Server ps = GameManager_Server.playerList[connectionID];
+        ps.TryToRotate(x,y,z);
     }
 }

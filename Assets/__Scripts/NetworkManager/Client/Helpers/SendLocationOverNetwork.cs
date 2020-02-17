@@ -4,48 +4,23 @@ using UnityEngine;
 
 public class SendLocationOverNetwork : MonoBehaviour
 {
-    private Coroutine sendLocationCoroutine;
+    private Vector3 lastPos = Vector3.up;
+    private Quaternion lastRot = Quaternion.Euler(0,0,0);
     
-    public void OnEnable()
-    {
-        //sendLocationCoroutine = StartCoroutine(SendLocation());
-    }
-
-    private void OnDisable()
-    {
-        //StopCoroutine(sendLocationCoroutine);
-    }
-
-    // Update is called once per frame
     private void LateUpdate()
     {
         Vector3 pos = transform.position;
-        if (pos != lastPos) //If you want, check to see if player position was minimal.
+        if (pos.normalized != lastPos.normalized) //If you want, check to see if player position was minimal.
         {
             NetworkSend_Client.SendCurrentLocation(pos.x,pos.y,pos.z);
             lastPos = pos;
         }
-    }
-
-    private Vector3 lastPos = Vector3.up;
-    
-    private IEnumerator SendLocation()
-    {
-        yield return this;
-        int frameMax = 2;
-        int frame = 0;
-        while (true)
+        
+        Quaternion rot = transform.rotation;
+        if (rot.normalized != lastRot.normalized) //If you want, check to see if player position was minimal.
         {
-            yield return new WaitForEndOfFrame();
-            frame++;
-            if(frame <= frameMax) continue;
-            frame = 0;
-            Vector3 pos = transform.position;
-            if (pos != lastPos) //If you want, check to see if player position was minimal.
-            {
-                NetworkSend_Client.SendCurrentLocation(pos.x,pos.y,pos.z);
-                lastPos = pos;
-            }
+            NetworkSend_Client.SendCurrentRotation(rot.x,rot.y,rot.z);
+            lastRot = rot;
         }
     }
 }

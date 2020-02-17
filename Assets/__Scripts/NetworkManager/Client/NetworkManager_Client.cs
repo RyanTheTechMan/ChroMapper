@@ -35,7 +35,12 @@ public class NetworkManager_Client : MonoBehaviour
         GameObject go = Instantiate(playerPrefab);
         go.name = "Player: " + connectionID;
 
-        if (currentPlayer) GameManager_Client.instance.LONScript.enabled = true;
+        if (currentPlayer)
+        {
+            GameManager_Client.instance.LONScript.enabled = true;
+            go.GetComponent<MeshRenderer>().enabled = false;
+            go.name = "Player: YOU";
+        }
         
         GameManager_Client.instance.playerList.Add(connectionID, go);
     }
