@@ -1,8 +1,10 @@
-﻿using Boo.Lang;
+﻿using System.Collections.Generic;
+using Boo.Lang;
 using KaymakNetwork;
+using SimpleJSON;
 using UnityEngine;
 
-internal static class NetworkReceive_Client
+internal abstract class NetworkReceive_Client
 {
     internal static void PacketRouter()
     {
@@ -64,7 +66,7 @@ internal static class NetworkReceive_Client
         
         GameManager_Client.instance.playerList[connectionID].transform.rotation = new Quaternion(x,y,z, w);
     }
-    
+
     private static void Packet_Action(ref byte[] data)
     {
         ByteBuffer buffer = new ByteBuffer(data);
@@ -74,16 +76,21 @@ internal static class NetworkReceive_Client
         BeatmapObject.Type beatmapObjectType = (BeatmapObject.Type) buffer.ReadInt32();
         buffer.Dispose();
 
-        NetworkManager_Client.Log("Received {0} and object type {1}", beatmapObject, beatmapObjectType.ToString());
+        NetworkManager_Client.Log("Received a {2} action with data: {0} and object type {1}", beatmapObject, beatmapObjectType.ToString(), beatmapActionType.ToString());
         
-        switch (beatmapActionType)
+        
+        switch (beatmapObjectType)
         {
-            case BeatmapActionType.NORMAL:
+            case BeatmapObject.Type.NOTE:
+                JSONNode node = JSON.Parse(beatmapObject);
+                BeatmapNote bo = new BeatmapNote(node) {beatmapType = beatmapObjectType};
                 
+                NetworkConfig_Client.BeatmapActionContainer.SpawnObject(bo, out _, false);
                 break;
             default:
                 break;
         }
         
     }
+
 }

@@ -25,13 +25,17 @@ public class BeatmapActionContainer : MonoBehaviour
     /// Adds a BeatmapAction to the stack.
     /// </summary>
     /// <param name="action">BeatmapAction to add.</param>
-    public static void AddAction(BeatmapAction action)
+    public static void AddAction(BeatmapAction action, bool canUndo = true)
     {
-        instance.beatmapActions.RemoveAll(x => !x.Active);
-        instance.beatmapActions.Add(action);
-        instance.beatmapActions = instance.beatmapActions.Distinct().ToList();
+        if (canUndo)
+        {
+            instance.beatmapActions.RemoveAll(x => !x.Active);
+            instance.beatmapActions.Add(action);
+            instance.beatmapActions = instance.beatmapActions.Distinct().ToList();
+        }
+        else action.data.Add(action.data.Last());
         Debug.Log($"Action of type {action.GetType().Name} added. ({action.Comment})");
-        OnBeatmapAction?.Invoke(action.data[action.data.Count-1], BeatmapActionType.NORMAL);
+        OnBeatmapAction?.Invoke(action.data.Last(), BeatmapActionType.NORMAL);
     }
 
     public void Undo()
@@ -43,7 +47,7 @@ public class BeatmapActionContainer : MonoBehaviour
         BeatmapActionParams param = new BeatmapActionParams(this);
         lastActive.Undo(param);
         lastActive.Active = false;
-        //OnBeatmapAction?.Invoke(lastActive, BeatmapActionType.UNDO);
+        OnBeatmapAction?.Invoke(lastActive.data.Last(), BeatmapActionType.UNDO);
     }
 
     public void Redo()
@@ -55,7 +59,7 @@ public class BeatmapActionContainer : MonoBehaviour
         BeatmapActionParams param = new BeatmapActionParams(this);
         firstNotActive.Redo(param);
         firstNotActive.Active = true;
-        //OnBeatmapAction?.Invoke(firstNotActive, BeatmapActionType.REDO);
+        OnBeatmapAction?.Invoke(firstNotActive.data.Last(), BeatmapActionType.REDO);
     }
 
     public class BeatmapActionParams

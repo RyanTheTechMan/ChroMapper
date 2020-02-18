@@ -9,7 +9,7 @@ public class GameManager_Client : MonoBehaviour
     public static GameManager_Client instance;
     public GameObject currentCamera;
     public SendLocationOverNetwork LONScript;
-
+    
     private void Awake()
     {
         instance = this;
