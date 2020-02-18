@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using UnityEngine;
-
+[Serializable]
 public abstract class BeatmapObjectContainer : MonoBehaviour {
 
     public static readonly int BeatmapObjectLayer = 9; //todo: is this needed

@@ -1,7 +1,7 @@
 ﻿using SimpleJSON;
 using System;
 
-public abstract class BeatmapObject {
+public abstract class BeatmapObject{
 
     public enum Type {
         NOTE,

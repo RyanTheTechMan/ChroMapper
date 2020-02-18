@@ -39,4 +39,17 @@ internal static class NetworkSend_Client
         
         buffer.Dispose();
     }
+    
+    public static void SendBeatmapAction(string beatmapObject, BeatmapActionType actionType,
+        BeatmapObject.Type beatmapObjectType)
+    {
+        ByteBuffer buffer = new ByteBuffer(4);
+        buffer.WriteInt32((int)ClientPackets.ACTION);
+        buffer.WriteString(beatmapObject);
+        buffer.WriteInt32((int)actionType);
+        buffer.WriteInt32((int)beatmapObjectType);
+        NetworkConfig_Client.socket.SendData(buffer.Data, buffer.Head);
+        
+        buffer.Dispose();
+    }
 }

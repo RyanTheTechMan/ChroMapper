@@ -1,4 +1,5 @@
-﻿using KaymakNetwork;
+﻿using System.Collections.Generic;
+using KaymakNetwork;
 using UnityEngine;
 
 internal static class NetworkRecieve_Server
@@ -8,6 +9,7 @@ internal static class NetworkRecieve_Server
         NetworkConfig_Server.socket.PacketId[(int) ClientPackets.PING] = Packet_Ping;
         NetworkConfig_Server.socket.PacketId[(int) ClientPackets.UPDATE_LOCATION] = Packet_UpdatePlayerLocation;
         NetworkConfig_Server.socket.PacketId[(int) ClientPackets.UPDATE_ROTATION] = Packet_UpdatePlayerRotation;
+        NetworkConfig_Server.socket.PacketId[(int) ClientPackets.ACTION] = Packet_Action;
     }
 
     private static void Packet_Ping(int connectionID, ref byte[] data)
@@ -47,5 +49,17 @@ internal static class NetworkRecieve_Server
 
         Player_Server ps = GameManager_Server.playerList[connectionID];
         ps.TryToRotate(x,y,z,w);
+    }
+    
+    private static void Packet_Action(int connectionID, ref byte[] data)
+    {
+        ByteBuffer buffer = new ByteBuffer(data);
+        string beatmapObject = buffer.ReadString();
+        int beatmapActionType = buffer.ReadInt32();
+        int beatmapObjectType = buffer.ReadInt32();
+
+        buffer.Dispose();
+
+        NetworkSend_Server.SendAction(connectionID, beatmapObject, beatmapActionType, beatmapObjectType);
     }
 }

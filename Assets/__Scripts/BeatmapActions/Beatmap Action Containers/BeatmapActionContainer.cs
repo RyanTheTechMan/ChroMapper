@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,13 +13,14 @@ public class BeatmapActionContainer : MonoBehaviour
     [SerializeField] private NodeEditorController nodeEditor;
     [SerializeField] private TracksManager tracksManager;
     private List<BeatmapObjectContainerCollection> collections;
-
+    public static Action<BeatmapObject, BeatmapActionType> OnBeatmapAction;
+    
     private void Start()
     {
         collections = selection.collections.ToList();
         instance = this;
     }
-
+    
     /// <summary>
     /// Adds a BeatmapAction to the stack.
     /// </summary>
@@ -29,6 +31,7 @@ public class BeatmapActionContainer : MonoBehaviour
         instance.beatmapActions.Add(action);
         instance.beatmapActions = instance.beatmapActions.Distinct().ToList();
         Debug.Log($"Action of type {action.GetType().Name} added. ({action.Comment})");
+        OnBeatmapAction?.Invoke(action.data[action.data.Count-1], BeatmapActionType.NORMAL);
     }
 
     public void Undo()
@@ -40,6 +43,7 @@ public class BeatmapActionContainer : MonoBehaviour
         BeatmapActionParams param = new BeatmapActionParams(this);
         lastActive.Undo(param);
         lastActive.Active = false;
+        //OnBeatmapAction?.Invoke(lastActive, BeatmapActionType.UNDO);
     }
 
     public void Redo()
@@ -51,6 +55,7 @@ public class BeatmapActionContainer : MonoBehaviour
         BeatmapActionParams param = new BeatmapActionParams(this);
         firstNotActive.Redo(param);
         firstNotActive.Active = true;
+        //OnBeatmapAction?.Invoke(firstNotActive, BeatmapActionType.REDO);
     }
 
     public class BeatmapActionParams
@@ -67,4 +72,10 @@ public class BeatmapActionContainer : MonoBehaviour
             tracksManager = container.tracksManager;
         }
     }
+}
+
+public enum BeatmapActionType{
+    NORMAL = 0,
+    UNDO = 1,
+    REDO = 2
 }

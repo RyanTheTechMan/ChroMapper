@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using UnityEngine;
 
 /// <summary>
 /// A BeatmapAction contains a BeatmapObjectContainer as well as a methods to Undo and Redo the action.
@@ -7,6 +8,7 @@ using System;
 /// An action can consist of placing and deleting, as well as more advanced options, like modifying via Node Editor,
 /// or using Strobe Generator
 /// </summary>
+
 public abstract class BeatmapAction : IEquatable<BeatmapAction>
 {
     public bool Active = true;

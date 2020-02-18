@@ -1,4 +1,5 @@
-﻿using KaymakNetwork;
+﻿using Boo.Lang;
+using KaymakNetwork;
 using UnityEngine;
 
 internal static class NetworkReceive_Client
@@ -9,6 +10,7 @@ internal static class NetworkReceive_Client
         NetworkConfig_Client.socket.PacketId[(int)ServerPackets.Instantiate_Player] = Packet_InitNetworkPlayer;
         NetworkConfig_Client.socket.PacketId[(int)ServerPackets.PLAYER_MOVE] = Packet_PlayerMove;
         NetworkConfig_Client.socket.PacketId[(int)ServerPackets.PLAYER_ROTATE] = Packet_PlayerRotate;
+        NetworkConfig_Client.socket.PacketId[(int)ServerPackets.ACTION] = Packet_Action;
     }
 
     private static void Packet_WelcomeMsg(ref byte[] data)
@@ -61,5 +63,27 @@ internal static class NetworkReceive_Client
         if(!GameManager_Client.instance.playerList.ContainsKey(connectionID)) return;
         
         GameManager_Client.instance.playerList[connectionID].transform.rotation = new Quaternion(x,y,z, w);
+    }
+    
+    private static void Packet_Action(ref byte[] data)
+    {
+        ByteBuffer buffer = new ByteBuffer(data);
+        int connectionID = buffer.ReadInt32();
+        string beatmapObject = buffer.ReadString();
+        BeatmapActionType beatmapActionType = (BeatmapActionType) buffer.ReadInt32();
+        BeatmapObject.Type beatmapObjectType = (BeatmapObject.Type) buffer.ReadInt32();
+        buffer.Dispose();
+
+        NetworkManager_Client.Log("Received {0} and object type {1}", beatmapObject, beatmapObjectType.ToString());
+        
+        switch (beatmapActionType)
+        {
+            case BeatmapActionType.NORMAL:
+                
+                break;
+            default:
+                break;
+        }
+        
     }
 }

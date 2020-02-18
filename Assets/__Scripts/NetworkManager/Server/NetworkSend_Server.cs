@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using KaymakNetwork;
 using UnityEngine;
 
@@ -68,6 +69,18 @@ internal class NetworkSend_Server
         buffer.WriteSingle(y);
         buffer.WriteSingle(z);
         buffer.WriteSingle(w);
+        NetworkConfig_Server.socket.SendDataToAllBut(connectionID, buffer.Data, buffer.Head);
+        buffer.Dispose();
+    }
+
+    public static void SendAction(int connectionID, string beatmapObject, int beatmapActionType, int beatmapObjectType)
+    {
+        ByteBuffer buffer = new ByteBuffer(4);
+        buffer.WriteInt32((int)ServerPackets.ACTION);
+        buffer.WriteInt32(connectionID);
+        buffer.WriteString(beatmapObject);
+        buffer.WriteInt32(beatmapActionType);
+        buffer.WriteInt32(beatmapObjectType);
         NetworkConfig_Server.socket.SendDataToAllBut(connectionID, buffer.Data, buffer.Head);
         buffer.Dispose();
     }

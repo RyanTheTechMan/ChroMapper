@@ -45,8 +45,15 @@ public class NetworkManager_Client : MonoBehaviour
         GameManager_Client.instance.playerList.Add(connectionID, go);
     }
     
-    public static void Log(dynamic msg)
+    public static void Log(string msg, dynamic parm1 = null, dynamic parm2 = null)
     {
-        Debug.Log("<color=#042a8a>CLIENT: " + msg + "</color>");
+        string c0 = "</color>";
+        string c1 = "<color=#042a8a>";
+        string c2 = "<color=#bd1212>";
+        string c3 = "<color=#06996f>";
+        
+        if(parm1 != null && parm2 != null) Debug.LogFormat(c1 + "CLIENT: " + msg + c0, c0 + c2 + parm1 + c0 + c1, c0 + c3 + parm2 + c0 + c1);
+        else if(parm1 != null) Debug.LogFormat(c1 + "CLIENT: " + msg + c0, c0 + c2 + parm1 + c0 + c1);
+        else Debug.Log(c1 + "CLIENT: " + msg + c0);
     }
 }

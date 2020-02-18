@@ -2,5 +2,6 @@
 { 
     PING = 1,
     UPDATE_LOCATION = 2,
-    UPDATE_ROTATION = 3
+    UPDATE_ROTATION = 3,
+    ACTION = 4
 }
