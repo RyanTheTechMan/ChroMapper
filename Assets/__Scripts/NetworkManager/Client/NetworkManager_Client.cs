@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class NetworkManager_Client : MonoBehaviour
 {
@@ -38,25 +39,40 @@ public class NetworkManager_Client : MonoBehaviour
         TextMeshPro text = go.GetComponentInChildren<TextMeshPro>();
         //todo set displayUsername
         //todo set image
-        
-        MeshRenderer
+
+        MeshRenderer mr = go.GetComponent<MeshRenderer>();
         
         if (currentPlayer)
         {
             GameManager_Client.instance.LONScript.enabled = true;
-            go.GetComponent<MeshRenderer>().enabled = false;
+            mr.enabled = false;
             go.name = "Player: YOU";
             text.enabled = false;
         }
         else
         {
             text.text = username;
-            
         }
+        
+        text.text = username;
+        StartCoroutine(SetPlayerAvatar(avatar, mr));
         
         GameManager_Client.instance.playerList.Add(connectionID, go);
     }
-    
+
+    IEnumerator SetPlayerAvatar(string link, MeshRenderer mr)
+    {
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(link);
+        yield return www.SendWebRequest();
+
+        if(www.isNetworkError || www.isHttpError) {
+            Debug.LogError(www.error + "received: " + link);
+        }
+        else {
+            mr.material.mainTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+        }
+    }
+
     public static void Log(string msg, dynamic parm1 = null, dynamic parm2 = null, dynamic parm3 = null)
     {
         string c0 = "</color>";
