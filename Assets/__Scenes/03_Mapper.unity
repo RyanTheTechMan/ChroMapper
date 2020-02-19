@@ -12256,6 +12256,7 @@ GameObject:
   - component: {fileID: 437105544}
   - component: {fileID: 437105543}
   - component: {fileID: 437105545}
+  - component: {fileID: 437105546}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -12277,7 +12278,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentCamera: {fileID: 119653246}
   LONScript: {fileID: 119653254}
-  BeatmapActionContainer: {fileID: 1524038337}
+  BeatmapActionContainer: {fileID: 25550672}
+  TracksManager: {fileID: 0}
 --- !u!4 &437105544
 Transform:
   m_ObjectHideFlags: 0
@@ -12302,6 +12304,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28f79c2fee1e4562b3372cac6db67ca0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &437105546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 437105542}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abe7780098144b7fbb8a5ccc929c354c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &437419688 stripped

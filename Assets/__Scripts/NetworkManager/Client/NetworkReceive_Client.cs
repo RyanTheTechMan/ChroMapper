@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
-using Boo.Lang;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using KaymakNetwork;
 using SimpleJSON;
 using UnityEngine;
@@ -13,6 +15,8 @@ internal abstract class NetworkReceive_Client
         NetworkConfig_Client.socket.PacketId[(int)ServerPackets.PLAYER_MOVE] = Packet_PlayerMove;
         NetworkConfig_Client.socket.PacketId[(int)ServerPackets.PLAYER_ROTATE] = Packet_PlayerRotate;
         NetworkConfig_Client.socket.PacketId[(int)ServerPackets.ACTION] = Packet_Action;
+        NetworkConfig_Client.socket.PacketId[(int)ServerPackets.USER_KICK] = Packet_Kick;
+        NetworkConfig_Client.socket.PacketId[(int)ServerPackets.MAP_DATA] = Packet_MapData;
     }
 
     private static void Packet_WelcomeMsg(ref byte[] data)
@@ -78,19 +82,56 @@ internal abstract class NetworkReceive_Client
 
         NetworkManager_Client.Log("Received a {2} action with data: {0} and object type {1}", beatmapObject, beatmapObjectType.ToString(), beatmapActionType.ToString());
         
+        List<BeatmapObjectContainerCollection> beatmapActionContainers = GameManager_Client.instance.BeatmapActionContainer.GetComponents<BeatmapObjectContainerCollection>().ToList(); //This will be changed
+        
+        JSONNode node = JSON.Parse(beatmapObject);
+
+        BeatmapObject bo;
         
         switch (beatmapObjectType)
         {
             case BeatmapObject.Type.NOTE:
-                JSONNode node = JSON.Parse(beatmapObject);
-                BeatmapNote bo = new BeatmapNote(node) {beatmapType = beatmapObjectType};
-                
-                NetworkConfig_Client.BeatmapActionContainer.SpawnObject(bo, out _, false);
+                bo = new BeatmapNote(node) {beatmapType = beatmapObjectType};
+                break;
+            case BeatmapObject.Type.OBSTACLE:
+                bo = new BeatmapObstacle(node) {beatmapType = beatmapObjectType};
+                break;
+            case BeatmapObject.Type.EVENT:
+                bo = new MapEvent(node) {beatmapType = beatmapObjectType};
+                break;
+            case BeatmapObject.Type.CUSTOM_EVENT:
+                bo = new BeatmapCustomEvent(node) {beatmapType = beatmapObjectType};
+                break;
+            case BeatmapObject.Type.BPM_CHANGE:
+                bo = new BeatmapBPMChange(node) {beatmapType = beatmapObjectType};
                 break;
             default:
-                break;
+                throw new ArgumentOutOfRangeException(nameof(beatmapObjectType), "Invalid Beatmap Object Type Received!!!");
         }
+        beatmapActionContainers.FirstOrDefault(x => x.ContainerType == beatmapObjectType)?.SpawnObject(bo, out _, false);
+        GameManager_Client.instance.TracksManager.RefreshTracks();
         
+    }
+    
+    private static void Packet_Kick(ref byte[] data)
+    {
+        ByteBuffer buffer = new ByteBuffer(data);
+        int connectionID = buffer.ReadInt32();
+        string reason = buffer.ReadString();
+        buffer.Dispose();
+        NetworkConfig_Client.socket.Disconnect();
+        
+        NetworkManager_Client.Log("You Have Been Kicked For {0}", reason);
+        //todo display reason here. KICK USER OUT OF MAPPER SCENE
+    }
+    
+    private static void Packet_MapData(ref byte[] data)
+    {
+        ByteBuffer buffer = new ByteBuffer(data);
+        NetworkMapData_Type networkMapDataType = (NetworkMapData_Type) buffer.ReadInt32();
+        byte[] chunk = buffer.ReadBytes();
+        buffer.Dispose();
+        NetworkConfig_Client.socket.Disconnect();
     }
 
 }

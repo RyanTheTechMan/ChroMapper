@@ -7,7 +7,7 @@ internal static class NetworkConfig_Server
 
     private static Server _socket;
 
-    internal static Server socket
+    internal static Server Socket
     {
         get => _socket;
         set
@@ -29,9 +29,9 @@ internal static class NetworkConfig_Server
 
     internal static void InitNetwork()
     {
-        if(socket != null) return;
+        if(Socket != null) return;
         
-        socket = new Server(100)
+        Socket = new Server(100)
         {
             BufferLimit = 2048000,
             PacketAcceptLimit = 100,

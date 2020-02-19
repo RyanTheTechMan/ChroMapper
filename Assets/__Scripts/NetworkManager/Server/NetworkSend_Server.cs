@@ -11,7 +11,7 @@ internal class NetworkSend_Server
         buffer.WriteInt32((int)ServerPackets.WELCOME_MSG);
         buffer.WriteInt32(connectionID);
         buffer.WriteString(msg);
-        NetworkConfig_Server.socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
+        NetworkConfig_Server.Socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
         buffer.Dispose();
     }
 
@@ -32,13 +32,13 @@ internal class NetworkSend_Server
             if (GameManager_Server.playerList[i] != null && GameManager_Server.playerList[i].inGame && i != connectionID)
             {
                 ByteBuffer buffer = PlayerData(i, player);
-                NetworkConfig_Server.socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
+                NetworkConfig_Server.Socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
                 buffer.Dispose();
             }
         }
         
         ByteBuffer buf = PlayerData(connectionID, player);
-        NetworkConfig_Server.socket.SendDataToAll(buf.Data, buf.Head);
+        NetworkConfig_Server.Socket.SendDataToAll(buf.Data, buf.Head);
         buf.Dispose();
     }
     
@@ -50,7 +50,7 @@ internal class NetworkSend_Server
         buffer.WriteSingle(x);
         buffer.WriteSingle(y);
         buffer.WriteSingle(z);
-        NetworkConfig_Server.socket.SendDataToAllBut(connectionID, buffer.Data, buffer.Head);
+        NetworkConfig_Server.Socket.SendDataToAllBut(connectionID, buffer.Data, buffer.Head);
         buffer.Dispose();
     }
     
@@ -69,7 +69,7 @@ internal class NetworkSend_Server
         buffer.WriteSingle(y);
         buffer.WriteSingle(z);
         buffer.WriteSingle(w);
-        NetworkConfig_Server.socket.SendDataToAllBut(connectionID, buffer.Data, buffer.Head);
+        NetworkConfig_Server.Socket.SendDataToAllBut(connectionID, buffer.Data, buffer.Head);
         buffer.Dispose();
     }
 
@@ -81,7 +81,30 @@ internal class NetworkSend_Server
         buffer.WriteString(beatmapObject);
         buffer.WriteInt32(beatmapActionType);
         buffer.WriteInt32(beatmapObjectType);
-        NetworkConfig_Server.socket.SendDataToAllBut(connectionID, buffer.Data, buffer.Head);
+        NetworkConfig_Server.Socket.SendDataToAllBut(connectionID, buffer.Data, buffer.Head);
         buffer.Dispose();
+    }
+
+    public static void SendKickUser(int connectionID, string reason)
+    {
+        ByteBuffer buffer = new ByteBuffer(4);
+        buffer.WriteInt32((int)ServerPackets.USER_KICK);
+        buffer.WriteInt32(connectionID);
+        buffer.WriteString(reason);
+        NetworkConfig_Server.Socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
+        buffer.Dispose();
+    }
+
+    public static void SendMapDataChunk(int connectionID, NetworkMapData_Type networkMapDataType, byte[][] mapData)
+    {
+        foreach (byte[] b in mapData)
+        {
+            ByteBuffer buffer = new ByteBuffer(4);
+            buffer.WriteInt32((int) ServerPackets.MAP_DATA);
+            buffer.WriteInt32((int) networkMapDataType);
+            buffer.WriteBytes(b);
+            NetworkConfig_Server.Socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
+            buffer.Dispose();
+        }
     }
 }

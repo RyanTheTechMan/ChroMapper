@@ -22,4 +22,10 @@ public class Player_Server
 
         NetworkSend_Server.SendPlayerRotate(connectionID, x,y,z, w);
     }
+
+    public void Kick(string reason)
+    {
+        NetworkSend_Server.SendKickUser(connectionID, reason);
+        NetworkConfig_Server.Socket.Disconnect(connectionID);
+    }
 }

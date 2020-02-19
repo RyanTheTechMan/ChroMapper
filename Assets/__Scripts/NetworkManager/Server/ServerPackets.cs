@@ -4,5 +4,7 @@
     Instantiate_Player = 2,
     PLAYER_MOVE = 3,
     PLAYER_ROTATE = 4,
-    ACTION = 5
+    ACTION = 5,
+    USER_KICK = 6,
+    MAP_DATA = 7
 }
