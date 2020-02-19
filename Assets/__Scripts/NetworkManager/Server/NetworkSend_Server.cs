@@ -21,6 +21,8 @@ internal class NetworkSend_Server
         ByteBuffer buffer = new ByteBuffer(4);
         buffer.WriteInt32((int)ServerPackets.Instantiate_Player);
         buffer.WriteInt32(connectionID);
+        buffer.WriteString(player.username);
+        buffer.WriteString(player.img);
 
         return buffer;
     }

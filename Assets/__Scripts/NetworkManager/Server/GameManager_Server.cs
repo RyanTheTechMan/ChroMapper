@@ -13,16 +13,18 @@ static class GameManager_Server
         NetworkSend_Server.InitNetworkPlayer(connectionID, player);
     }
     
-    public static void CreatePlayer(int connectionID)
+    public static void CreatePlayer(int connectionID, string username, string avatar)
     {
         Player_Server player = new Player_Server
         {
             connectionID = connectionID,
-            inGame = true
+            inGame = true,
+            username = username,
+            img = avatar
         };
         
         playerList.Add(connectionID, player);
-        NetworkManager_Server.Log("Player {0} has been added to the game.", connectionID);
+        NetworkManager_Server.Log("Player {0} (id {1}) has been added to the game.", username, connectionID);
         JoinGame(connectionID, player);
     }
 }

@@ -11,7 +11,18 @@ internal static class NetworkSend_Client
     {
         ByteBuffer buffer = new ByteBuffer(4);
         buffer.WriteInt32((int)ClientPackets.PING);
-        buffer.WriteString(Application.version); //todo, possibly also send username? Get it from discord?
+        buffer.WriteString(Application.version);
+        if (GameManager_Client.instance.discordUsername == "")
+        {
+            buffer.WriteString("");
+            buffer.WriteString("");
+        }
+        else
+        {
+            buffer.WriteString(GameManager_Client.instance.discordUsername);
+            buffer.WriteString(GameManager_Client.instance.discordAvatar);
+        }
+
         NetworkConfig_Client.socket.SendData(buffer.Data, buffer.Head);
         
         buffer.Dispose();
@@ -53,9 +64,6 @@ internal static class NetworkSend_Client
         
         buffer.Dispose();
     }
-
-    public static void SendRequestForMapData()
-    
     public static void SendMapData(NetworkMapData_Type type, string data)
     { //buffer is in size of bytes. So, 1000 = 1 byte //todo make it so saving is disabled while sending map
         int bufferSize = 500; //todo make it so the user can change this value. In Options, in new category, multiplayer.
@@ -88,7 +96,6 @@ internal static class NetworkSend_Client
             NetworkConfig_Client.socket.SendData(buffer.Data, buffer.Head);
         
             buffer.Dispose();
-            
         }
     }
 }

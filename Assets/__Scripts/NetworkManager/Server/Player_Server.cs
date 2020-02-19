@@ -4,6 +4,8 @@ public class Player_Server
 {
     public int connectionID;
     public bool inGame;
+    public string username;
+    public string img;
     public Vector3 position;
     public Quaternion rotation;
 

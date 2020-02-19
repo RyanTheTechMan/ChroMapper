@@ -36,8 +36,13 @@ internal abstract class NetworkReceive_Client
     {
         ByteBuffer buffer = new ByteBuffer(data);
         int connectionID = buffer.ReadInt32();
+        string username = buffer.ReadString();
+        string avatar = buffer.ReadString();
 
-        NetworkManager_Client.instance.InitNetworkPlayer(connectionID, connectionID == NetworkManager_Client.instance.connectionID);
+        NetworkManager_Client.instance.
+            InitNetworkPlayer(connectionID, 
+                connectionID == NetworkManager_Client.instance.connectionID,
+                username, avatar);
 
         buffer.Dispose();
     }
@@ -128,7 +133,7 @@ internal abstract class NetworkReceive_Client
     private static void Packet_MapData(ref byte[] data)
     {
         ByteBuffer buffer = new ByteBuffer(data);
-        NetworkMapData_Type networkMapDataType = (NetworkMapData_Type) buffer.ReadInt32();
+        //NetworkMapData_Type networkMapDataType = (NetworkMapData_Type) buffer.ReadInt32();
         byte[] chunk = buffer.ReadBytes();
         buffer.Dispose();
         NetworkConfig_Client.socket.Disconnect();

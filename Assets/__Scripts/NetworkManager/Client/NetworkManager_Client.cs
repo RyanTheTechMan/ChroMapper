@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using TMPro;
 using UnityEngine;
 
 public class NetworkManager_Client : MonoBehaviour
@@ -30,16 +31,27 @@ public class NetworkManager_Client : MonoBehaviour
         NetworkConfig_Client.DisconnectFromServer();
     }
 
-    public void InitNetworkPlayer(int connectionID, bool currentPlayer)
+    public void InitNetworkPlayer(int connectionID, bool currentPlayer, string username, string avatar)
     {
         GameObject go = Instantiate(playerPrefab);
-        go.name = "Player: " + connectionID;
-
+        go.name = "Player: " + connectionID + " (" + username + ")";
+        TextMeshPro text = go.GetComponentInChildren<TextMeshPro>();
+        //todo set displayUsername
+        //todo set image
+        
+        MeshRenderer
+        
         if (currentPlayer)
         {
             GameManager_Client.instance.LONScript.enabled = true;
             go.GetComponent<MeshRenderer>().enabled = false;
             go.name = "Player: YOU";
+            text.enabled = false;
+        }
+        else
+        {
+            text.text = username;
+            
         }
         
         GameManager_Client.instance.playerList.Add(connectionID, go);

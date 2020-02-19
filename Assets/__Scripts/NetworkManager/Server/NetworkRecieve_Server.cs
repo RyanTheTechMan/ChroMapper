@@ -19,10 +19,14 @@ internal static class NetworkRecieve_Server
     {
         ByteBuffer buffer = new ByteBuffer(data);
         string version = buffer.ReadString();
+        string username = buffer.ReadString();
+        string avatar = buffer.ReadString();
         
         buffer.Dispose();
-        
-        NetworkManager_Server.Log("User {0} connected with v{1}", connectionID, version);
+
+        if (username == "") username = "Editor " + connectionID;
+
+        NetworkManager_Server.Log("User {0} (id {1}) connected with v{2}", username, connectionID, version);
 
         if (version != "0.6.0")
         {
@@ -30,7 +34,7 @@ internal static class NetworkRecieve_Server
             ps.Kick("Incorrect Version: " + version + "\nServer Version: " + "0.6.0");
         }
             
-        GameManager_Server.CreatePlayer(connectionID);
+        GameManager_Server.CreatePlayer(connectionID, username, avatar);
     }
     
     private static void Packet_UpdatePlayerLocation(int connectionID, ref byte[] data)
