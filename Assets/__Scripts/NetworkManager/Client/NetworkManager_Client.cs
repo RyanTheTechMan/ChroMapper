@@ -18,18 +18,17 @@ public class NetworkManager_Client : MonoBehaviour
         instance = this;
     }
 
-    // Start is called before the first frame update
     void Start()
     {
-        //DontDestroyOnLoad(this); this is prob not needed!
+        //DontDestroyOnLoad(this);
     }
 
     internal void SetupNetwork()
     {
-        Log("Username: '{0}'", GameManager_Client.instance.discordUsername);
         Log("Starting Client");
         NetworkConfig_Client.InitNetwork();
         NetworkConfig_Client.ConnectToServer();
+        
     }
 
     private void OnDisable()
@@ -42,8 +41,6 @@ public class NetworkManager_Client : MonoBehaviour
         GameObject go = Instantiate(playerPrefab, GameManager_Client.instance.transform, true);
         go.name = "Player: " + connectionID + " (" + username + ")";
         TextMeshPro text = go.GetComponentInChildren<TextMeshPro>();
-        //todo set displayUsername
-        //todo set image
 
         MeshRenderer mr = go.GetComponent<MeshRenderer>();
         
@@ -53,19 +50,20 @@ public class NetworkManager_Client : MonoBehaviour
             mr.enabled = false;
             go.name = "Player: YOU";
             text.enabled = false;
-            text.transform.SetParent(GameManager_Client.instance.transform, true);
         }
         else
         {
             text.text = username;
+            StartCoroutine(SetPlayerAvatar(avatar, mr));
         }
-        
-        StartCoroutine(SetPlayerAvatar(avatar, mr));
+
+        text.transform.SetParent(GameManager_Client.instance.transform, true);
+        text.name = "Nameplate: " + connectionID + " (" + username + ")";
         
         GameManager_Client.instance.playerList.Add(connectionID, go);
     }
 
-    IEnumerator SetPlayerAvatar(string link, MeshRenderer mr)
+    private IEnumerator SetPlayerAvatar(string link, MeshRenderer mr)
     {
         UnityWebRequest www = UnityWebRequestTexture.GetTexture(link);
         yield return www.SendWebRequest();

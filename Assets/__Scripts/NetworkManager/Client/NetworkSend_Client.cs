@@ -22,6 +22,8 @@ internal static class NetworkSend_Client
             buffer.WriteString(GameManager_Client.instance.discordUsername);
             buffer.WriteString(GameManager_Client.instance.discordAvatar);
         }
+        
+        buffer.WriteString(GameManager_Client.instance.hostValidator);
 
         NetworkConfig_Client.socket.SendData(buffer.Data, buffer.Head);
         
@@ -64,13 +66,13 @@ internal static class NetworkSend_Client
         
         buffer.Dispose();
     }
-    public static void SendMapData(NetworkMapData_Type type, string data)
+    public static void SendMapData(NetworkMapData_Type type, int clientIDToSendTo, string fileLocation)
     { //buffer is in size of bytes. So, 1000 = 1 byte //todo make it so saving is disabled while sending map
         int bufferSize = 500; //todo make it so the user can change this value. In Options, in new category, multiplayer.
 
-        if (type == NetworkMapData_Type.SONG) bufferSize = 1000;
+        if (type == NetworkMapData_Type.SONG) bufferSize = 1000; //may be changed
         
-        FileStream fs = new FileStream(data, FileMode.Open, FileAccess.Read);
+        FileStream fs = new FileStream(fileLocation, FileMode.Open, FileAccess.Read);
         int noOfChunks = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(fs.Length) / Convert.ToDouble(bufferSize)));
 
         int totalLength = (int) fs.Length;
@@ -90,12 +92,25 @@ internal static class NetworkSend_Client
             ByteBuffer buffer = new ByteBuffer(sendingBuffer.Length);
             buffer.WriteInt32((int) ClientPackets.MAP_DATA);
             buffer.WriteInt32((int) type);
-            buffer.WriteInt32(noOfChunks);
-            buffer.WriteInt32(i + 1);
-            buffer.WriteBytes(sendingBuffer);
+            buffer.WriteInt32(noOfChunks); //Total number of chunks
+            buffer.WriteInt32(i + 1); //What chunk we are on
+            buffer.WriteInt32(clientIDToSendTo); //The ID to send the data to
+            buffer.WriteBytes(sendingBuffer); //Chunk Data
             NetworkConfig_Client.socket.SendData(buffer.Data, buffer.Head);
         
             buffer.Dispose();
         }
+    }
+
+    public static void SendRequestForMapData(NetworkMapData_Type type)
+    {
+        GameManager_Client.instance.mapDataRequest = type;
+        
+        ByteBuffer buffer = new ByteBuffer(4);
+        buffer.WriteInt32((int) ClientPackets.MAP_DATA_REQUEST);
+        buffer.WriteInt32((int) type);
+        NetworkConfig_Client.socket.SendData(buffer.Data, buffer.Head);
+        
+        buffer.Dispose();
     }
 }

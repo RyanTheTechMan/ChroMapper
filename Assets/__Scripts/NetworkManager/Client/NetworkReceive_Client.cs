@@ -10,13 +10,15 @@ internal abstract class NetworkReceive_Client
 {
     internal static void PacketRouter()
     {
-        NetworkConfig_Client.socket.PacketId[(int)ServerPackets.WELCOME_MSG] = Packet_WelcomeMsg;
-        NetworkConfig_Client.socket.PacketId[(int)ServerPackets.Instantiate_Player] = Packet_InitNetworkPlayer;
-        NetworkConfig_Client.socket.PacketId[(int)ServerPackets.PLAYER_MOVE] = Packet_PlayerMove;
-        NetworkConfig_Client.socket.PacketId[(int)ServerPackets.PLAYER_ROTATE] = Packet_PlayerRotate;
-        NetworkConfig_Client.socket.PacketId[(int)ServerPackets.ACTION] = Packet_Action;
-        NetworkConfig_Client.socket.PacketId[(int)ServerPackets.USER_KICK] = Packet_Kick;
-        NetworkConfig_Client.socket.PacketId[(int)ServerPackets.MAP_DATA] = Packet_MapData;
+        NetworkConfig_Client.socket.PacketId[(int) ServerPackets.WELCOME_MSG] = Packet_WelcomeMsg;
+        NetworkConfig_Client.socket.PacketId[(int) ServerPackets.Instantiate_Player] = Packet_InitNetworkPlayer;
+        NetworkConfig_Client.socket.PacketId[(int) ServerPackets.PLAYER_MOVE] = Packet_PlayerMove;
+        NetworkConfig_Client.socket.PacketId[(int) ServerPackets.PLAYER_ROTATE] = Packet_PlayerRotate;
+        NetworkConfig_Client.socket.PacketId[(int) ServerPackets.ACTION] = Packet_Action;
+        NetworkConfig_Client.socket.PacketId[(int) ServerPackets.USER_KICK] = Packet_Kick;
+        NetworkConfig_Client.socket.PacketId[(int) ServerPackets.MAP_DATA] = Packet_MapData;
+        NetworkConfig_Client.socket.PacketId[(int) ServerPackets.MAP_DATA_REQUEST_TO_HOST] =
+            Packet_MapDataRequestToHost;
     }
 
     private static void Packet_WelcomeMsg(ref byte[] data)
@@ -27,7 +29,7 @@ internal abstract class NetworkReceive_Client
         buffer.Dispose();
 
         NetworkManager_Client.instance.connectionID = connectionID;
-        
+
         NetworkSend_Client.SendPing();
 
     }
@@ -39,8 +41,8 @@ internal abstract class NetworkReceive_Client
         string username = buffer.ReadString();
         string avatar = buffer.ReadString();
 
-        NetworkManager_Client.instance.
-            InitNetworkPlayer(connectionID, connectionID == NetworkManager_Client.instance.connectionID, username, avatar);
+        NetworkManager_Client.instance.InitNetworkPlayer(connectionID,
+            connectionID == NetworkManager_Client.instance.connectionID, username, avatar);
 
         buffer.Dispose();
     }
@@ -54,11 +56,11 @@ internal abstract class NetworkReceive_Client
         float z = buffer.ReadSingle();
         buffer.Dispose();
 
-        if(!GameManager_Client.instance.playerList.ContainsKey(connectionID)) return;
-        
-        GameManager_Client.instance.playerList[connectionID].transform.position = new Vector3(x,y,z);
+        if (!GameManager_Client.instance.playerList.ContainsKey(connectionID)) return;
+
+        GameManager_Client.instance.playerList[connectionID].transform.position = new Vector3(x, y, z);
     }
-    
+
     private static void Packet_PlayerRotate(ref byte[] data)
     {
         ByteBuffer buffer = new ByteBuffer(data);
@@ -69,9 +71,9 @@ internal abstract class NetworkReceive_Client
         float w = buffer.ReadSingle();
         buffer.Dispose();
 
-        if(!GameManager_Client.instance.playerList.ContainsKey(connectionID)) return;
-        
-        GameManager_Client.instance.playerList[connectionID].transform.rotation = new Quaternion(x,y,z, w);
+        if (!GameManager_Client.instance.playerList.ContainsKey(connectionID)) return;
+
+        GameManager_Client.instance.playerList[connectionID].transform.rotation = new Quaternion(x, y, z, w);
     }
 
     private static void Packet_Action(ref byte[] data)
@@ -83,14 +85,16 @@ internal abstract class NetworkReceive_Client
         BeatmapObject.Type beatmapObjectType = (BeatmapObject.Type) buffer.ReadInt32();
         buffer.Dispose();
 
-        NetworkManager_Client.Log("Received a {2} action with data: {0} and object type {1}", beatmapObject, beatmapObjectType.ToString(), beatmapActionType.ToString());
-        
-        List<BeatmapObjectContainerCollection> beatmapActionContainers = GameManager_Client.instance.BeatmapActionContainer.GetComponents<BeatmapObjectContainerCollection>().ToList(); //This will be changed
-        
+        NetworkManager_Client.Log("Received a {2} action with data: {0} and object type {1}", beatmapObject,
+            beatmapObjectType.ToString(), beatmapActionType.ToString());
+
+        List<BeatmapObjectContainerCollection> beatmapActionContainers = GameManager_Client.instance
+            .BeatmapActionContainer.GetComponents<BeatmapObjectContainerCollection>().ToList(); //This will be changed
+
         JSONNode node = JSON.Parse(beatmapObject);
 
         BeatmapObject bo;
-        
+
         switch (beatmapObjectType)
         {
             case BeatmapObject.Type.NOTE:
@@ -109,13 +113,16 @@ internal abstract class NetworkReceive_Client
                 bo = new BeatmapBPMChange(node) {beatmapType = beatmapObjectType};
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(beatmapObjectType), "Invalid Beatmap Object Type Received!!!");
+                throw new ArgumentOutOfRangeException(nameof(beatmapObjectType),
+                    "Invalid Beatmap Object Type Received!!!");
         }
-        beatmapActionContainers.FirstOrDefault(x => x.ContainerType == beatmapObjectType)?.SpawnObject(bo, out _, false);
+
+        beatmapActionContainers.FirstOrDefault(x => x.ContainerType == beatmapObjectType)
+            ?.SpawnObject(bo, out _, false);
         GameManager_Client.instance.TracksManager.RefreshTracks();
-        
+
     }
-    
+
     private static void Packet_Kick(ref byte[] data)
     {
         ByteBuffer buffer = new ByteBuffer(data);
@@ -123,18 +130,80 @@ internal abstract class NetworkReceive_Client
         string reason = buffer.ReadString();
         buffer.Dispose();
         NetworkConfig_Client.socket.Disconnect();
-        
+
         NetworkManager_Client.Log("You Have Been Kicked For {0}", reason);
         //todo display reason here. KICK USER OUT OF MAPPER SCENE
     }
-    
+
     private static void Packet_MapData(ref byte[] data)
     {
         ByteBuffer buffer = new ByteBuffer(data);
-        //NetworkMapData_Type networkMapDataType = (NetworkMapData_Type) buffer.ReadInt32();
+        NetworkMapData_Type networkMapDataType = (NetworkMapData_Type) buffer.ReadInt32();
+        int chunkID = buffer.ReadInt32();
+        int totalChunks = buffer.ReadInt32();
         byte[] chunk = buffer.ReadBytes();
         buffer.Dispose();
-        NetworkConfig_Client.socket.Disconnect();
+
+        if (GameManager_Client.instance.mapDataRequest == networkMapDataType)
+        {
+            NetworkManager_Client.Log("Received {0} packet when expecting {1}",
+                networkMapDataType.ToString(),
+                GameManager_Client.instance.mapDataRequest.ToString());
+            return;
+        }
+
+        string folderLocation = GameManager_Client.instance.TemporaryDirectory.FullName;
+        FileStream fs = null;
+        switch (networkMapDataType)
+        {
+            case NetworkMapData_Type.INFO:
+                fs = new FileStream(folderLocation + "/info.json", FileMode.OpenOrCreate, FileAccess.Write);
+                break;
+            case NetworkMapData_Type.DIFFICULTY:
+                fs = new FileStream(folderLocation + "/.json", FileMode.OpenOrCreate, FileAccess.Write);//todo also send correctName
+                break;
+            case NetworkMapData_Type.SONG:
+                fs = new FileStream(folderLocation + "/.ogg", FileMode.OpenOrCreate, FileAccess.Write);//todo also send correctName
+                break;
+            default:
+                return;
+        }
+        
+        fs.Write(chunk, 0, chunk.Length);
+        fs.Close();
+        
+        
+    }
+
+    private static void Packet_MapDataRequestToHost(ref byte[] data)
+    {
+        ByteBuffer buffer = new ByteBuffer(data);
+        NetworkMapData_Type networkMapDataType = (NetworkMapData_Type) buffer.ReadInt32();
+        int requestedClient = buffer.ReadInt32();
+        buffer.Dispose();
+
+        string fileLoc = "";
+        
+        switch (networkMapDataType)
+        {
+            case NetworkMapData_Type.INFO:
+                fileLoc = BeatSaberSongContainer.Instance.song.directory + "/info.dat";
+                break;
+            case NetworkMapData_Type.DIFFICULTY:
+                fileLoc = BeatSaberSongContainer.Instance.map.directoryAndFile;
+                break;
+            case NetworkMapData_Type.SONG:
+                fileLoc = BeatSaberSongContainer.Instance.song.directory + "/" + BeatSaberSongContainer.Instance.song.songFilename;
+                break;
+        }
+
+        if (fileLoc == "")
+        {
+            NetworkManager_Client.Log("Something went wrong with retrieving data from the client.");
+            return;
+        }
+        
+        NetworkSend_Client.SendMapData(networkMapDataType, requestedClient, fileLoc);
     }
 
 }

@@ -38,7 +38,7 @@ internal static class NetworkConfig_Server
             PacketDisconnectCount = 150
         };
         
-        NetworkRecieve_Server.PacketRouter();
+        NetworkReceive_Server.PacketRouter();
     }
     
     internal static void Socket_ConnectionReceived(int connectionID)

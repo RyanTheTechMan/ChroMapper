@@ -97,16 +97,25 @@ internal class NetworkSend_Server
         buffer.Dispose();
     }
 
-    public static void SendMapDataChunk(int connectionID, NetworkMapData_Type networkMapDataType, byte[][] mapData)
+    public static void SendMapDataRequestToHost(int connectionID, NetworkMapData_Type networkMapDataType)
     {
-        foreach (byte[] b in mapData)
-        {
-            ByteBuffer buffer = new ByteBuffer(4);
-            buffer.WriteInt32((int) ServerPackets.MAP_DATA);
-            buffer.WriteInt32((int) networkMapDataType);
-            buffer.WriteBytes(b);
-            NetworkConfig_Server.Socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
-            buffer.Dispose();
-        }
+        ByteBuffer buffer = new ByteBuffer(4);
+        buffer.WriteInt32((int) ServerPackets.MAP_DATA_REQUEST_TO_HOST);
+        buffer.WriteInt32((int) networkMapDataType);
+        buffer.WriteInt32(connectionID);
+        NetworkConfig_Server.Socket.SendDataTo(GameManager_Server.host.connectionID, buffer.Data, buffer.Head);
+        buffer.Dispose();
+    }
+    
+    public static void SendMapDataChunk(int connectionID, int chunkID, int totalChunks, NetworkMapData_Type networkMapDataType, byte[] data)
+    {
+        ByteBuffer buffer = new ByteBuffer(4);
+        buffer.WriteInt32((int) ServerPackets.MAP_DATA);
+        buffer.WriteInt32((int) networkMapDataType);
+        buffer.WriteInt32(chunkID);
+        buffer.WriteInt32(totalChunks);
+        buffer.WriteBytes(data);
+        NetworkConfig_Server.Socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
+        buffer.Dispose();
     }
 }

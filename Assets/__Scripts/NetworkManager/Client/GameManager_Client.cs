@@ -12,10 +12,20 @@ public class GameManager_Client : MonoBehaviour
     public GameObject currentCamera;
     public SendLocationOverNetwork LONScript;
     public Transform BeatmapActionContainer;
+    
+    
     [HideInInspector] public TracksManager TracksManager;
 
     [HideInInspector] public string discordUsername;
     [HideInInspector] public string discordAvatar;
+    
+    [HideInInspector] public bool downloadedInfo;
+    [HideInInspector] public bool downloadedDifficulty;
+    [HideInInspector] public bool downloadedSong;
+
+    [HideInInspector] public NetworkMapData_Type mapDataRequest = NetworkMapData_Type.NONE;
+
+    public string hostValidator = Guid.NewGuid().ToString();
     
     /// <summary>
     /// Use 'TemporaryDirectory.FullName' to get the location.
@@ -45,15 +55,26 @@ public class GameManager_Client : MonoBehaviour
     private void SetupDiscordInfo()
     {
         NetworkManager_Client.Log("Starting discord info");
-        Discord.Discord discord = ((DiscordController) FindObjectOfType(typeof(DiscordController))).discord;
-        
-        UserManager userManager = discord.GetUserManager();
-        userManager.OnCurrentUserUpdate += () =>
+        DiscordController discordController = (DiscordController) FindObjectOfType(typeof(DiscordController));
+
+        if (DiscordController.IsActive)
         {
-            User user = userManager.GetCurrentUser();
-            discordUsername = user.Username;
-            discordAvatar = "https://cdn.discordapp.com/avatars/" + user.Id + "/" + user.Avatar + ".png";
+
+            Discord.Discord discord = discordController.discord;
+            UserManager userManager = discord.GetUserManager();
+            userManager.OnCurrentUserUpdate += () =>
+            {
+                User user = userManager.GetCurrentUser();
+                discordUsername = user.Username;
+                discordAvatar = "https://cdn.discordapp.com/avatars/" + user.Id + "/" + user.Avatar + ".png";
+                NetworkManager_Client.instance.SetupNetwork();
+            };
+        }
+        else
+        {
+            discordUsername = "";
+            discordAvatar = "";
             NetworkManager_Client.instance.SetupNetwork();
-        };
+        }
     }
 }

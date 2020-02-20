@@ -4,6 +4,7 @@ public class Player_Server
 {
     public int connectionID;
     public bool inGame;
+    public string hostValidator;
     public string username;
     public string img;
     public Vector3 position;
