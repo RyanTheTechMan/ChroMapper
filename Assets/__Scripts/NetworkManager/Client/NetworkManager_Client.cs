@@ -22,6 +22,11 @@ public class NetworkManager_Client : MonoBehaviour
     void Start()
     {
         //DontDestroyOnLoad(this); this is prob not needed!
+    }
+
+    internal void SetupNetwork()
+    {
+        Log("Username: '{0}'", GameManager_Client.instance.discordUsername);
         Log("Starting Client");
         NetworkConfig_Client.InitNetwork();
         NetworkConfig_Client.ConnectToServer();
@@ -34,7 +39,7 @@ public class NetworkManager_Client : MonoBehaviour
 
     public void InitNetworkPlayer(int connectionID, bool currentPlayer, string username, string avatar)
     {
-        GameObject go = Instantiate(playerPrefab);
+        GameObject go = Instantiate(playerPrefab, GameManager_Client.instance.transform, true);
         go.name = "Player: " + connectionID + " (" + username + ")";
         TextMeshPro text = go.GetComponentInChildren<TextMeshPro>();
         //todo set displayUsername
@@ -48,13 +53,13 @@ public class NetworkManager_Client : MonoBehaviour
             mr.enabled = false;
             go.name = "Player: YOU";
             text.enabled = false;
+            text.transform.SetParent(GameManager_Client.instance.transform, true);
         }
         else
         {
             text.text = username;
         }
         
-        text.text = username;
         StartCoroutine(SetPlayerAvatar(avatar, mr));
         
         GameManager_Client.instance.playerList.Add(connectionID, go);
@@ -66,7 +71,8 @@ public class NetworkManager_Client : MonoBehaviour
         yield return www.SendWebRequest();
 
         if(www.isNetworkError || www.isHttpError) {
-            Debug.LogError(www.error + "received: " + link);
+            Debug.Log(www.error);
+            Debug.Log("Received: " + link);
         }
         else {
             mr.material.mainTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;

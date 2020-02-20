@@ -40,9 +40,7 @@ internal abstract class NetworkReceive_Client
         string avatar = buffer.ReadString();
 
         NetworkManager_Client.instance.
-            InitNetworkPlayer(connectionID, 
-                connectionID == NetworkManager_Client.instance.connectionID,
-                username, avatar);
+            InitNetworkPlayer(connectionID, connectionID == NetworkManager_Client.instance.connectionID, username, avatar);
 
         buffer.Dispose();
     }

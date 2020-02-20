@@ -33,7 +33,9 @@ internal static class NetworkRecieve_Server
             Player_Server ps = GameManager_Server.playerList[connectionID];
             ps.Kick("Incorrect Version: " + version + "\nServer Version: " + "0.6.0");
         }
-            
+        
+        NetworkManager_Server.Log("Avatar: {0}", avatar);
+        
         GameManager_Server.CreatePlayer(connectionID, username, avatar);
     }
     

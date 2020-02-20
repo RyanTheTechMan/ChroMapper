@@ -34,16 +34,17 @@ public class GameManager_Client : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        SetupDiscordInfo();
     }
 
     private void Start()
     {
         TracksManager = BeatmapActionContainer.GetComponent<TracksManager>();
-        SetupDiscordInfo();
     }
 
     private void SetupDiscordInfo()
     {
+        NetworkManager_Client.Log("Starting discord info");
         Discord.Discord discord = ((DiscordController) FindObjectOfType(typeof(DiscordController))).discord;
         
         UserManager userManager = discord.GetUserManager();
@@ -52,6 +53,7 @@ public class GameManager_Client : MonoBehaviour
             User user = userManager.GetCurrentUser();
             discordUsername = user.Username;
             discordAvatar = "https://cdn.discordapp.com/avatars/" + user.Id + "/" + user.Avatar + ".png";
+            NetworkManager_Client.instance.SetupNetwork();
         };
     }
 }
