@@ -28,8 +28,8 @@ public class SendMapData : MonoBehaviour
         
 
         NetworkManager_Client.Log("Received all Map Data! {0}", 
-            GameManager_Client.TemporaryDirectory.GetFiles("*", 
-                SearchOption.AllDirectories).Sum(fi => fi.Length) * 1000 + " Bytes");
+            (GameManager_Client.TemporaryDirectory.GetFiles("*", 
+                SearchOption.AllDirectories).Sum(fi => fi.Length) / 1000.0 / 1000.0).ToString("F2") + " Mega Bytes");
         
         yield return this;
     }

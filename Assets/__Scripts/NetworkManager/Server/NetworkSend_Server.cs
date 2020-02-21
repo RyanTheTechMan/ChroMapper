@@ -107,13 +107,14 @@ internal class NetworkSend_Server
         buffer.Dispose();
     }
     
-    public static void SendMapDataChunk(int connectionID, int chunkID, int totalChunks, NetworkMapData_Type networkMapDataType, byte[] data)
+    public static void SendMapDataChunk(int connectionID, int chunkID, int totalChunks, NetworkMapData_Type networkMapDataType, string fileName, byte[] data)
     {
         ByteBuffer buffer = new ByteBuffer(4);
         buffer.WriteInt32((int) ServerPackets.MAP_DATA);
         buffer.WriteInt32((int) networkMapDataType);
         buffer.WriteInt32(chunkID);
         buffer.WriteInt32(totalChunks);
+        buffer.WriteString(fileName);
         buffer.WriteBytes(data);
         NetworkConfig_Server.Socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
         buffer.Dispose();

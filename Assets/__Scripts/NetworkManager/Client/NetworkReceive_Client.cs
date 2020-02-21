@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -151,12 +152,15 @@ internal abstract class NetworkReceive_Client
         
     }
 
+    
+
     private static void Packet_MapData(ref byte[] data)
     {
         ByteBuffer buffer = new ByteBuffer(data);
         NetworkMapData_Type networkMapDataType = (NetworkMapData_Type) buffer.ReadInt32();
         int chunkID = buffer.ReadInt32();
         int totalChunks = buffer.ReadInt32();
+        string fileName = buffer.ReadString();
         byte[] chunk = buffer.ReadBytes();
         buffer.Dispose();
 
@@ -168,35 +172,22 @@ internal abstract class NetworkReceive_Client
             return;
         }
 
-        string folderLocation = GameManager_Client.TemporaryDirectory.FullName;
-        FileStream fs = null;
-        switch (networkMapDataType)
-        {
-            case NetworkMapData_Type.INFO:
-                fs = new FileStream(folderLocation + "/info.json", FileMode.OpenOrCreate, FileAccess.Write);
-                break;
-            case NetworkMapData_Type.DIFFICULTY:
-                fs = new FileStream(folderLocation + "/.json", FileMode.OpenOrCreate, FileAccess.Write);//todo also send correctName
-                break;
-            case NetworkMapData_Type.SONG:
-                fs = new FileStream(folderLocation + "/.ogg", FileMode.OpenOrCreate, FileAccess.Write);//todo also send correctName
-                break;
-            default:
-                return;
-        }
+        if (GameManager_Client.MapDataBytes == null) GameManager_Client.MapDataBytes = new byte[totalChunks][];
         
-        fs.Write(chunk, 0, chunk.Length);
-        fs.Close(); //todo make it so the client asks for the next packet so it wont FREEZE!!
 
-        if (chunkID == 1) NetworkManager_Client.Log("Writing {0} to {1}", networkMapDataType.ToString(), folderLocation);
+        if (chunkID == 1) NetworkManager_Client.Log("Receiving {0}", networkMapDataType.ToString());
+
+        GameManager_Client.MapDataBytes[chunkID-1] = chunk;
         
         if (chunkID == totalChunks)
         {
-            NetworkManager_Client.Log("Finished Writing {0} to {1}", networkMapDataType.ToString(), folderLocation);
-            GameManager_Client.instance.mapDataRequest = NetworkMapData_Type.NONE;
+            NetworkManager_Client.Log("Saving data on chunk {0}/{1}", chunkID, totalChunks);
+            string folderLocation = GameManager_Client.TemporaryDirectory.FullName;
+            GameManager_Client.instance.SaveMapData(folderLocation + "/" + fileName);
         }
-        
     }
+
+    
 
     private static void Packet_MapDataRequestToHost(ref byte[] data)
     {

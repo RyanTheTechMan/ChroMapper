@@ -12,7 +12,7 @@ public class NetworkManager_Client : MonoBehaviour
 
     public int connectionID;
     public static NetworkManager_Client instance;
-    
+
     private void Awake()
     {
         instance = this;

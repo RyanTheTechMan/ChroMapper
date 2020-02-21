@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Discord;
@@ -20,6 +21,8 @@ public class GameManager_Client : MonoBehaviour
     [HideInInspector] public string discordAvatar;
 
     [HideInInspector] public NetworkMapData_Type mapDataRequest = NetworkMapData_Type.NONE;
+    
+    [HideInInspector] public static byte[][] MapDataBytes = null;
 
     public string hostValidator = Guid.NewGuid().ToString();
     
@@ -30,7 +33,7 @@ public class GameManager_Client : MonoBehaviour
 
     private void OnDestroy()
     {
-        if(TemporaryDirectory.Exists) TemporaryDirectory.Delete();
+        if(TemporaryDirectory.Exists) TemporaryDirectory.Delete(true);
     }
 
     private void Awake()
@@ -68,4 +71,27 @@ public class GameManager_Client : MonoBehaviour
             NetworkManager_Client.instance.SetupNetwork();
         }
     }
+
+    public void SaveMapData(string fileLocation)
+    {
+        StartCoroutine(saveMapData(fileLocation));
+    }
+    
+    private IEnumerator saveMapData(string fileLocation)
+    {
+        FileStream fs = new FileStream(fileLocation, FileMode.OpenOrCreate, FileAccess.Write);
+        NetworkManager_Client.Log("Writing {0} to {1}", instance.mapDataRequest, fileLocation);
+        foreach (byte[] b in MapDataBytes)
+        {
+            fs.Write(b, 0, b.Length);
+            yield return new WaitForEndOfFrame();
+        }
+        fs.Close();
+        
+        NetworkManager_Client.Log("Finished Writing {0} to {1}", instance.mapDataRequest, fileLocation);
+        MapDataBytes = null;
+        instance.mapDataRequest = NetworkMapData_Type.NONE;
+        yield return true;
+    }
+    
 }

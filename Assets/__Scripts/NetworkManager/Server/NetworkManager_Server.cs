@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Net.Sockets;
+using UnityEngine;
 
 public class NetworkManager_Server : MonoBehaviour
 {
@@ -6,7 +8,16 @@ public class NetworkManager_Server : MonoBehaviour
     void Start()
     {
         NetworkConfig_Server.InitNetwork();
-        NetworkConfig_Server.Socket.StartListening(5555,5,1);
+        try
+        {
+            NetworkConfig_Server.Socket.StartListening(5555,5,1);
+        }
+        catch (SocketException e)
+        {
+            Console.WriteLine(e);
+            Log("Is the server already running?");
+            return;
+        }
         Log("Network Initialized");
     }
     

@@ -70,7 +70,7 @@ internal static class NetworkSend_Client
     { //buffer is in size of bytes. So, 1000 = 1 byte //todo make it so saving is disabled while sending map
         int bufferSize = 500; //todo make it so the user can change this value. In Options, in new category, multiplayer.
 
-        if (type == NetworkMapData_Type.SONG) bufferSize = 1000; //may be changed
+        if (type == NetworkMapData_Type.SONG) bufferSize = 6000; //may be changed
         
         FileStream fs = new FileStream(fileLocation, FileMode.Open, FileAccess.Read);
         int noOfChunks = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(fs.Length) / Convert.ToDouble(bufferSize)));
@@ -95,6 +95,7 @@ internal static class NetworkSend_Client
             buffer.WriteInt32(noOfChunks); //Total number of chunks
             buffer.WriteInt32(i + 1); //What chunk we are on
             buffer.WriteInt32(clientIDToSendTo); //The ID to send the data to
+            buffer.WriteString(fileLocation.Substring(fileLocation.LastIndexOf("/", StringComparison.Ordinal) + 1)); //The Name of the file
             buffer.WriteBytes(sendingBuffer); //Chunk Data
             NetworkConfig_Client.socket.SendData(buffer.Data, buffer.Head);
         
@@ -104,7 +105,6 @@ internal static class NetworkSend_Client
 
     public static void SendRequestForMapData(NetworkMapData_Type type)
     {
-        
         NetworkManager_Client.Log("Requesting for Map Data Type: {0}", type.ToString());
         
         GameManager_Client.instance.mapDataRequest = type;
