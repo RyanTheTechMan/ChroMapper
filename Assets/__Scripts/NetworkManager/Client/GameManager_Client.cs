@@ -2,8 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Discord;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager_Client : MonoBehaviour
 {
@@ -13,7 +16,8 @@ public class GameManager_Client : MonoBehaviour
     public GameObject currentCamera;
     public SendLocationOverNetwork LONScript;
     public Transform BeatmapActionContainer;
-    
+    public Slider loadingSlider;
+    [HideInInspector] public TextMeshProUGUI SliderText;
     
     [HideInInspector] public TracksManager TracksManager;
 
@@ -81,11 +85,15 @@ public class GameManager_Client : MonoBehaviour
     {
         FileStream fs = new FileStream(fileLocation, FileMode.OpenOrCreate, FileAccess.Write);
         NetworkManager_Client.Log("Writing {0} to {1}", instance.mapDataRequest, fileLocation);
-        foreach (byte[] b in MapDataBytes)
+        instance.SliderText.text = "Saving " + fileLocation.Substring(fileLocation.IndexOf("/", StringComparison.Ordinal) + 1).ToLower();
+        for (int i = 0; i < MapDataBytes.Length; i++)
         {
+            byte[] b = MapDataBytes[i];
+            instance.loadingSlider.value = Mathf.Abs(i / (float) MapDataBytes.Length);
             fs.Write(b, 0, b.Length);
             yield return new WaitForEndOfFrame();
         }
+
         fs.Close();
         
         NetworkManager_Client.Log("Finished Writing {0} to {1}", instance.mapDataRequest, fileLocation);

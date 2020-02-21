@@ -105,6 +105,9 @@ internal static class NetworkSend_Client
 
     public static void SendRequestForMapData(NetworkMapData_Type type)
     {
+        GameManager_Client.instance.loadingSlider.value = 0;
+        GameManager_Client.instance.SliderText.text = "Requesting for " + type.ToString().ToLower();
+        
         NetworkManager_Client.Log("Requesting for Map Data Type: {0}", type.ToString());
         
         GameManager_Client.instance.mapDataRequest = type;

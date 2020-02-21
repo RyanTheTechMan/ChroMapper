@@ -12282,11 +12282,8 @@ MonoBehaviour:
   TracksManager: {fileID: 0}
   discordUsername: 
   discordAvatar: 
-  downloadedInfo: 0
-  downloadedDifficulty: 0
-  downloadedSong: 0
   mapDataRequest: 0
-  hostValidator: 963e05b3-63ca-4da6-b9f1-75c9f6b4b25f
+  hostValidator: 
 --- !u!4 &437105544
 Transform:
   m_ObjectHideFlags: 0
@@ -25055,7 +25052,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1946301807}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.17670153
+  m_Size: 0.17670155
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

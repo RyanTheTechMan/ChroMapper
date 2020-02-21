@@ -174,6 +174,8 @@ internal abstract class NetworkReceive_Client
 
         if (GameManager_Client.MapDataBytes == null) GameManager_Client.MapDataBytes = new byte[totalChunks][];
         
+        GameManager_Client.instance.loadingSlider.value = Mathf.Abs((float)chunkID/(float)totalChunks);
+        GameManager_Client.instance.SliderText.text = "Downloading " + networkMapDataType.ToString().ToLower();
 
         if (chunkID == 1) NetworkManager_Client.Log("Receiving {0}", networkMapDataType.ToString());
 
