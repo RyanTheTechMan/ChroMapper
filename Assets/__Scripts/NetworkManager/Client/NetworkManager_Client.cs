@@ -59,8 +59,8 @@ public class NetworkManager_Client : MonoBehaviour
 
         text.transform.SetParent(GameManager_Client.instance.transform, true);
         text.name = "Nameplate: " + connectionID + " (" + username + ")";
-        
-        GameManager_Client.instance.playerList.Add(connectionID, go);
+
+        GameManager_Client.instance.playerList[connectionID] = go;
     }
 
     private IEnumerator SetPlayerAvatar(string link, MeshRenderer mr)

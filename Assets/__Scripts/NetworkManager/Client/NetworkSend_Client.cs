@@ -104,6 +104,9 @@ internal static class NetworkSend_Client
 
     public static void SendRequestForMapData(NetworkMapData_Type type)
     {
+        
+        NetworkManager_Client.Log("Requesting for Map Data Type: {0}", type.ToString());
+        
         GameManager_Client.instance.mapDataRequest = type;
         
         ByteBuffer buffer = new ByteBuffer(4);

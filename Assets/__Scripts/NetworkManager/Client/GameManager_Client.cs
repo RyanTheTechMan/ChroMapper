@@ -18,10 +18,6 @@ public class GameManager_Client : MonoBehaviour
 
     [HideInInspector] public string discordUsername;
     [HideInInspector] public string discordAvatar;
-    
-    [HideInInspector] public bool downloadedInfo;
-    [HideInInspector] public bool downloadedDifficulty;
-    [HideInInspector] public bool downloadedSong;
 
     [HideInInspector] public NetworkMapData_Type mapDataRequest = NetworkMapData_Type.NONE;
 
@@ -30,11 +26,7 @@ public class GameManager_Client : MonoBehaviour
     /// <summary>
     /// Use 'TemporaryDirectory.FullName' to get the location.
     /// </summary>
-    public DirectoryInfo TemporaryDirectory
-    {
-        get => TemporaryDirectory ?? (TemporaryDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString())));
-        private set => TemporaryDirectory = value;
-    }
+    public static readonly DirectoryInfo TemporaryDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()));
 
     private void OnDestroy()
     {
@@ -55,11 +47,10 @@ public class GameManager_Client : MonoBehaviour
     private void SetupDiscordInfo()
     {
         NetworkManager_Client.Log("Starting discord info");
-        DiscordController discordController = (DiscordController) FindObjectOfType(typeof(DiscordController));
 
         if (DiscordController.IsActive)
         {
-
+            DiscordController discordController = (DiscordController) FindObjectOfType(typeof(DiscordController));
             Discord.Discord discord = discordController.discord;
             UserManager userManager = discord.GetUserManager();
             userManager.OnCurrentUserUpdate += () =>

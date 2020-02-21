@@ -50,5 +50,6 @@ internal static class NetworkConfig_Server
     internal static void Socket_ConnectionLost(int connectionID)
     {
         NetworkManager_Server.Log("Connection lost on index [" + connectionID + "]");
+        NetworkSend_Server.SendPlayerLeft(connectionID, PlayerLeave_Reason.LOST_CONNECTION);
     }
 }

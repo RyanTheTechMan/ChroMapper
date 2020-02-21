@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using Discord;
 using UnityEngine;
 
@@ -14,12 +15,22 @@ public class SendMapData : MonoBehaviour
 
     private IEnumerator RequestForMapData()
     {
+        while (GameManager_Client.instance.mapDataRequest != NetworkMapData_Type.NONE) {yield return new WaitForEndOfFrame();}
         NetworkSend_Client.SendRequestForMapData(NetworkMapData_Type.INFO);
         
-        //NetworkSend_Client.SendMapData(NetworkMapData_Type.INFO, BeatSaberSongContainer.Instance.song.directory + "/info.dat");
-        //NetworkSend_Client.SendMapData(NetworkMapData_Type.DIFFICULTY, BeatSaberSongContainer.Instance.map.directoryAndFile);
-        //NetworkSend_Client.SendMapData(NetworkMapData_Type.SONG, BeatSaberSongContainer.Instance.song.directory + "/" + BeatSaberSongContainer.Instance.song.songFilename);
-        //string s = GameManager_Client.instance.TemporaryDirectory.FullName;
+        while (GameManager_Client.instance.mapDataRequest != NetworkMapData_Type.NONE) {yield return new WaitForEndOfFrame();}
+        NetworkSend_Client.SendRequestForMapData(NetworkMapData_Type.DIFFICULTY);
+        
+        while (GameManager_Client.instance.mapDataRequest != NetworkMapData_Type.NONE) {yield return new WaitForEndOfFrame();}
+        NetworkSend_Client.SendRequestForMapData(NetworkMapData_Type.SONG);
+        
+        while (GameManager_Client.instance.mapDataRequest != NetworkMapData_Type.NONE) {yield return new WaitForEndOfFrame();}
+        
+
+        NetworkManager_Client.Log("Received all Map Data! {0}", 
+            GameManager_Client.TemporaryDirectory.GetFiles("*", 
+                SearchOption.AllDirectories).Sum(fi => fi.Length) * 1000 + " Bytes");
+        
         yield return this;
     }
 }

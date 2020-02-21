@@ -118,4 +118,14 @@ internal class NetworkSend_Server
         NetworkConfig_Server.Socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
         buffer.Dispose();
     }
+
+    public static void SendPlayerLeft(int connectionID, PlayerLeave_Reason reason)
+    {
+        ByteBuffer buffer = new ByteBuffer(4);
+        buffer.WriteInt32((int) ServerPackets.PLAYER_LEAVE);
+        buffer.WriteInt32((int) reason);
+        NetworkConfig_Server.Socket.SendDataToAllBut(connectionID, buffer.Data, buffer.Head);
+        buffer.Dispose();
+        GameManager_Server.playerList[connectionID].isConnected = false;
+    }
 }

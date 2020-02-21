@@ -5,6 +5,7 @@ using System.Linq;
 using KaymakNetwork;
 using SimpleJSON;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 internal abstract class NetworkReceive_Client
 {
@@ -17,8 +18,8 @@ internal abstract class NetworkReceive_Client
         NetworkConfig_Client.socket.PacketId[(int) ServerPackets.ACTION] = Packet_Action;
         NetworkConfig_Client.socket.PacketId[(int) ServerPackets.USER_KICK] = Packet_Kick;
         NetworkConfig_Client.socket.PacketId[(int) ServerPackets.MAP_DATA] = Packet_MapData;
-        NetworkConfig_Client.socket.PacketId[(int) ServerPackets.MAP_DATA_REQUEST_TO_HOST] =
-            Packet_MapDataRequestToHost;
+        NetworkConfig_Client.socket.PacketId[(int) ServerPackets.MAP_DATA_REQUEST_TO_HOST] = Packet_MapDataRequestToHost;
+        NetworkConfig_Client.socket.PacketId[(int) ServerPackets.PLAYER_LEAVE] = Packet_PlayerLeft;
     }
 
     private static void Packet_WelcomeMsg(ref byte[] data)
@@ -134,6 +135,21 @@ internal abstract class NetworkReceive_Client
         NetworkManager_Client.Log("You Have Been Kicked For {0}", reason);
         //todo display reason here. KICK USER OUT OF MAPPER SCENE
     }
+    
+    private static void Packet_PlayerLeft(ref byte[] data)
+    {
+        ByteBuffer buffer = new ByteBuffer(data);
+        int connectionID = buffer.ReadInt32();
+        PlayerLeave_Reason reason = (PlayerLeave_Reason) buffer.ReadInt32();
+        buffer.Dispose();
+
+        GameObject pl = GameManager_Client.instance.playerList[connectionID];
+        
+        NetworkManager_Client.Log("{0} Has left because {1}", pl.name, reason.ToString());
+        
+        Object.Destroy(pl);
+        
+    }
 
     private static void Packet_MapData(ref byte[] data)
     {
@@ -144,7 +160,7 @@ internal abstract class NetworkReceive_Client
         byte[] chunk = buffer.ReadBytes();
         buffer.Dispose();
 
-        if (GameManager_Client.instance.mapDataRequest == networkMapDataType)
+        if (GameManager_Client.instance.mapDataRequest != networkMapDataType)
         {
             NetworkManager_Client.Log("Received {0} packet when expecting {1}",
                 networkMapDataType.ToString(),
@@ -152,7 +168,7 @@ internal abstract class NetworkReceive_Client
             return;
         }
 
-        string folderLocation = GameManager_Client.instance.TemporaryDirectory.FullName;
+        string folderLocation = GameManager_Client.TemporaryDirectory.FullName;
         FileStream fs = null;
         switch (networkMapDataType)
         {
@@ -170,8 +186,15 @@ internal abstract class NetworkReceive_Client
         }
         
         fs.Write(chunk, 0, chunk.Length);
-        fs.Close();
+        fs.Close(); //todo make it so the client asks for the next packet so it wont FREEZE!!
+
+        if (chunkID == 1) NetworkManager_Client.Log("Writing {0} to {1}", networkMapDataType.ToString(), folderLocation);
         
+        if (chunkID == totalChunks)
+        {
+            NetworkManager_Client.Log("Finished Writing {0} to {1}", networkMapDataType.ToString(), folderLocation);
+            GameManager_Client.instance.mapDataRequest = NetworkMapData_Type.NONE;
+        }
         
     }
 

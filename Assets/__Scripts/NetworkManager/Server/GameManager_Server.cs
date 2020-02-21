@@ -24,7 +24,7 @@ static class GameManager_Server
             hostValidator = hostValidator
         };
 
-        if (!ServerIsHost && connectionID == 0) //todo test to be sure initial connection is 0
+        if (!ServerIsHost && connectionID == 1) //todo test to be sure initial connection is 1
         {
             host = player;
         } 

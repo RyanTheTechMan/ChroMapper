@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,10 +7,17 @@ public class NameplateMover : MonoBehaviour
 {
     [SerializeField] private Transform _nameplateTransform;
 
-    private void LateUpdate()//Make this follow where the camera is, so the name is always visable
+    private void LateUpdate()
     {
-        Vector3 pos = transform.position;
+        Transform transform1 = transform;
+        Vector3 pos = transform1.position;
         pos.y += 1;
         _nameplateTransform.position = pos;
+        _nameplateTransform.LookAt(GameManager_Client.instance.currentCamera.transform);
+    }
+
+    private void OnDestroy()
+    {
+        Destroy(_nameplateTransform.gameObject);
     }
 }
