@@ -14,6 +14,12 @@ internal static class NetworkReceive_Server
         NetworkConfig_Server.Socket.PacketId[(int) ClientPackets.ACTION] = Packet_Action;
         NetworkConfig_Server.Socket.PacketId[(int) ClientPackets.MAP_DATA] = Packet_MapData;
         NetworkConfig_Server.Socket.PacketId[(int) ClientPackets.MAP_DATA_REQUEST] = Packet_MapDataRequest;
+        NetworkConfig_Server.Socket.TrafficReceived += ReceivedTraffic;
+    }
+
+    private static void ReceivedTraffic(int size, ref byte[] data)
+    {
+        
     }
 
     private static void Packet_Ping(int connectionID, ref byte[] data)

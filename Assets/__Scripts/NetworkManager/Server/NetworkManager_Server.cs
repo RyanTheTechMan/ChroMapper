@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class NetworkManager_Server : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    void OnEnable()
     {
+        DontDestroyOnLoad(this);
         NetworkConfig_Server.InitNetwork();
         try
         {

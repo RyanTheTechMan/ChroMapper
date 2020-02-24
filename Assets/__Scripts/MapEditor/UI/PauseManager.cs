@@ -60,6 +60,22 @@ public class PauseManager : MonoBehaviour {
         PersistentUI.Instance.ShowDialogBox("Do you want to save before quiting ChroMapper?",
             SaveAndQuitCMResult, PersistentUI.DialogBoxPresetType.YesNoCancel);
     }
+    
+    public void BecomeHost()
+    {
+        PersistentUI.Instance.ShowDialogBox("Do you want to enable Multiplayer?", EnableMultiplayer, PersistentUI.DialogBoxPresetType.YesNo);
+    }
+
+    private void EnableMultiplayer(int result)
+    {
+        if (result == 0)
+        {
+            GameObject go = GameObject.Find("Multiplayer Support");
+            go.GetComponent<NetworkManager_Server>().enabled = true;
+            go.GetComponent<NetworkManager_Client>().enabled = true;
+            go.GetComponent<GameManager_Client>().enabled = true;
+        }
+    }
 
     private void SaveAndExitResult(int result)
     {

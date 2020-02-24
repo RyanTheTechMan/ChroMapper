@@ -31,7 +31,7 @@ internal class NetworkSend_Server
     {
         for (int i = 1; i < GameManager_Server.playerList.Count; i++)
         {
-            if (GameManager_Server.playerList[i] != null && GameManager_Server.playerList[i].inGame && i != connectionID)
+            if (GameManager_Server.playerList[i] != null && GameManager_Server.playerList[i].inEditor && i != connectionID)
             {
                 ByteBuffer buffer = PlayerData(i, player);
                 NetworkConfig_Server.Socket.SendDataTo(connectionID, buffer.Data, buffer.Head);

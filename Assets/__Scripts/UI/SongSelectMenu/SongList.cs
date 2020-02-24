@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SongList : MonoBehaviour {
@@ -47,6 +48,11 @@ public class SongList : MonoBehaviour {
         WIPLevels = !WIPLevels;
         RefreshSongList(false);
         songLocationToggleText.text = WIPLevels ? "Custom\nLevels" : "Custom\nWIP\nLevels";
+    }
+
+    public void LoadMultiplayer()
+    {
+        SceneManager.LoadSceneAsync(5);
     }
 
     public void RefreshSongList(bool search) {

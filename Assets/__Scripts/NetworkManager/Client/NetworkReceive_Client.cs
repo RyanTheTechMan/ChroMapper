@@ -34,6 +34,7 @@ internal abstract class NetworkReceive_Client
 
         NetworkSend_Client.SendPing();
 
+        if(connectionID != 1) GameManager_Client.instance.RequestForMapData(); //Will need to add a way to check if user is host.
     }
 
     private static void Packet_InitNetworkPlayer(ref byte[] data)
@@ -43,8 +44,7 @@ internal abstract class NetworkReceive_Client
         string username = buffer.ReadString();
         string avatar = buffer.ReadString();
 
-        NetworkManager_Client.instance.InitNetworkPlayer(connectionID,
-            connectionID == NetworkManager_Client.instance.connectionID, username, avatar);
+        NetworkManager_Client.instance.InitNetworkPlayer(connectionID, connectionID == NetworkManager_Client.instance.connectionID, username, avatar);
 
         buffer.Dispose();
     }

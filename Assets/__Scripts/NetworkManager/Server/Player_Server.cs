@@ -3,7 +3,7 @@
 public class Player_Server
 {
     public int connectionID;
-    public bool inGame;
+    public bool inEditor;
     public bool isConnected;
     public string hostValidator;
     public string username;

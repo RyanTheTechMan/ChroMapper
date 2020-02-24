@@ -13,14 +13,14 @@ public class NetworkManager_Client : MonoBehaviour
     public int connectionID;
     public static NetworkManager_Client instance;
 
-    private void Awake()
+    private void OnEnable()
     {
         instance = this;
+        DontDestroyOnLoad(this);
     }
 
     void Start()
     {
-        //DontDestroyOnLoad(this);
     }
 
     internal void SetupNetwork()
@@ -36,8 +36,20 @@ public class NetworkManager_Client : MonoBehaviour
         NetworkConfig_Client.DisconnectFromServer();
     }
 
+    
+    
     public void InitNetworkPlayer(int connectionID, bool currentPlayer, string username, string avatar)
     {
+        Player_Client pc = new Player_Client
+        {
+            ConnectionID = connectionID,
+            Username = username,
+            Avatar = avatar,
+            Setup_CurrentPlayer = currentPlayer
+        };
+        
+        if(!GameManager_Client.inMapperScene) GameManager_Client.instance.initQueue.Add(pc);
+        
         GameObject go = Instantiate(playerPrefab, GameManager_Client.instance.transform, true);
         go.name = "Player: " + connectionID + " (" + username + ")";
         TextMeshPro text = go.GetComponentInChildren<TextMeshPro>();

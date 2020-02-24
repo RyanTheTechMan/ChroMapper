@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SendBeatmapActionOverNetwork : MonoBehaviour
 {
-    private void Start()
+    private void OnEnable()
     {
         BeatmapActionContainer.OnBeatmapAction += OnBeatmapAction;
     }

@@ -510,7 +510,7 @@ public class SongInfoEditUI : MonoBehaviour {
         if (!(a || b || c || d))
         {
             PersistentUI.Instance.ShowDialogBox(
-                "ChroMapper is currently set to not load anything enabled.\n" +
+                "ChroMapper is currently set to not load anything.\n" +
                 "To set something to load, visit Options and scroll to the bottom of mapper settings.", 
                 null, PersistentUI.DialogBoxPresetType.Ok);
             return;
@@ -531,7 +531,7 @@ public class SongInfoEditUI : MonoBehaviour {
         //StartCoroutine(GetSongFromDifficultyData(map));
     }
 
-    IEnumerator GetSongFromDifficultyData(BeatSaberMap map)
+    public IEnumerator GetSongFromDifficultyData(BeatSaberMap map)
     {
         BeatSaberSong.DifficultyBeatmap data = songDifficultyData[selectedDifficultyIndex];
         string directory = Song.directory;

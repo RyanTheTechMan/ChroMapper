@@ -8,7 +8,7 @@ static class GameManager_Server
 
     public static bool ServerIsHost = false; //Does not work at the moment
 
-    public static void JoinGame(int connectionID, Player_Server player)
+    private static void JoinGame(int connectionID, Player_Server player)
     {
         NetworkSend_Server.InitNetworkPlayer(connectionID, player);
     }
@@ -18,7 +18,7 @@ static class GameManager_Server
         Player_Server player = new Player_Server
         {
             connectionID = connectionID,
-            inGame = true,
+            inEditor = false,
             username = username,
             img = avatar,
             hostValidator = hostValidator
@@ -31,6 +31,7 @@ static class GameManager_Server
         
         playerList.Add(connectionID, player);
         NetworkManager_Server.Log("Player {0} (id {1}) has been added to the game.", username, connectionID);
+
         JoinGame(connectionID, player);
     }
 }
