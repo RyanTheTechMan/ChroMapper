@@ -71,9 +71,9 @@ public class PauseManager : MonoBehaviour {
         if (result == 0)
         {
             GameObject go = GameObject.Find("Multiplayer Support");
-            go.GetComponent<NetworkManager_Server>().enabled = true;
-            go.GetComponent<NetworkManager_Client>().enabled = true;
-            go.GetComponent<GameManager_Client>().enabled = true;
+            go.GetComponent<NetworkManager>().enabled = true;
+            go.GetComponent<Client>().enabled = true;
+            go.GetComponent<GameManager>().enabled = true;
         }
     }
 

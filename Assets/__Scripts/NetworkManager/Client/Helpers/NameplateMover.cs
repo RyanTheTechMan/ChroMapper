@@ -13,7 +13,7 @@ public class NameplateMover : MonoBehaviour
         Vector3 pos = transform1.position;
         pos.y += 1;
         _nameplateTransform.position = pos;
-        _nameplateTransform.LookAt(GameManager_Client.instance.currentCamera.transform);
+        _nameplateTransform.LookAt(GameManager.instance.currentCamera.transform);
     }
 
     private void OnDestroy()
