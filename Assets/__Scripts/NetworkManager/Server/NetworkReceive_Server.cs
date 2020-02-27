@@ -15,7 +15,7 @@ internal static class NetworkReceive_Server
         NetworkConfig_Server.Socket.PacketId[(int) ClientPackets.ACTION] = Packet_Action;
         NetworkConfig_Server.Socket.PacketId[(int) ClientPackets.MAP_DATA] = Packet_MapData;
         NetworkConfig_Server.Socket.PacketId[(int) ClientPackets.MAP_DATA_REQUEST] = Packet_MapDataRequest;
-        NetworkConfig_Server.Socket.TrafficReceived += MedioMapper;
+        //NetworkConfig_Server.Socket.TrafficReceived += MedioMapper;
     }
 
     private static void MedioMapper(int size, ref byte[] data)
@@ -62,6 +62,7 @@ internal static class NetworkReceive_Server
         if (version != "0.6.0")
         {
             Player_Server ps = GameManager_Server.playerList[connectionID];
+            NetworkManager_Server.Log("Kicked {0} (id {1}) because on v{2}", username, connectionID, version);
             ps.Kick("Incorrect Version: " + version + "\nServer Version: " + "0.6.0");
         }
         

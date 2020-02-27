@@ -51,14 +51,15 @@ public class GameManager_Client : MonoBehaviour
     {
         instance = this;
 
-        if (gameObject.scene.name == "03_Mapper")
+        Scene activeScene = SceneManager.GetActiveScene();
+        if (activeScene == SceneManager.GetSceneByName("03_Mapper"))
         {
             TracksManager = FindObjectOfType<TracksManager>();
             BeatmapActionContainer = TracksManager.gameObject.transform;
             LONScript = currentCamera.GetComponent<SendLocationOverNetwork>();
             inMapperScene = true;
         }
-        else if (gameObject.scene.name == "05_MultiplayerHelper")
+        else if (activeScene == SceneManager.GetSceneByName("05_MultiplayerHelper"))
         {
             SliderText = loadingSlider.GetComponentInChildren<TextMeshProUGUI>();
             inMapperScene = false;
@@ -74,7 +75,6 @@ public class GameManager_Client : MonoBehaviour
 
     private void SetupDiscordInfo()
     {
-        return;
         NetworkManager_Client.Log("Starting discord info");
         
         if (DiscordController.IsActive)
@@ -112,6 +112,7 @@ public class GameManager_Client : MonoBehaviour
         {
             byte[] b = MapDataBytes[i];
             instance.loadingSlider.value = Mathf.Abs(i / (float) MapDataBytes.Length);
+            instance.SliderText.text = "Saving " + fileLocation.Substring(fileLocation.IndexOf("/", StringComparison.Ordinal) + 1).ToLower() + " | " + (instance.loadingSlider.value*100.0) + "%";
             fs.Write(b, 0, b.Length);
             yield return new WaitForEndOfFrame();
         }
@@ -121,7 +122,7 @@ public class GameManager_Client : MonoBehaviour
         NetworkManager_Client.Log("Finished Writing {0} to {1}", instance.mapDataRequest, fileLocation);
         MapDataBytes = null;
         instance.mapDataRequest = NetworkMapData_Type.NONE;
-        yield return true;
+        yield break;
     }
 
     public void RequestForMapData()
@@ -158,9 +159,10 @@ public class GameManager_Client : MonoBehaviour
         }
         
         BeatSaberSongContainer.Instance.map = BeatSaberMap.GetBeatSaberMapFromJSON(mainNode, TemporaryDirectory.FullName + "/" + "info.dat");
-        FindObjectOfType<SongInfoEditUI>().GetSongFromDifficultyData(BeatSaberSongContainer.Instance.map);
+        StartCoroutine(FindObjectOfType<SongInfoEditUI>().GetSongFromDifficultyData(null));
         
         SceneManager.LoadSceneAsync(3);
+        //SceneManager.UnloadSceneAsync(5);
 
         currentCamera = FindObjectOfType<CameraController>().gameObject;
         LONScript = currentCamera.GetComponent<SendLocationOverNetwork>();
@@ -176,6 +178,8 @@ public class GameManager_Client : MonoBehaviour
             {
                 NetworkManager_Client.instance.InitNetworkPlayer(pc.ConnectionID, pc.Setup_CurrentPlayer, pc.Username, pc.Avatar);
             }
+
+            initQueue = null;
         }
         
         yield return this;

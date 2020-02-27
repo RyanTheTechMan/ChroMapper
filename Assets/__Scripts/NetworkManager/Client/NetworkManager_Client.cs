@@ -36,8 +36,6 @@ public class NetworkManager_Client : MonoBehaviour
         NetworkConfig_Client.DisconnectFromServer();
     }
 
-    
-    
     public void InitNetworkPlayer(int connectionID, bool currentPlayer, string username, string avatar)
     {
         Player_Client pc = new Player_Client
@@ -47,8 +45,12 @@ public class NetworkManager_Client : MonoBehaviour
             Avatar = avatar,
             Setup_CurrentPlayer = currentPlayer
         };
-        
-        if(!GameManager_Client.inMapperScene) GameManager_Client.instance.initQueue.Add(pc);
+
+        if (!GameManager_Client.inMapperScene)
+        {
+            GameManager_Client.instance.initQueue.Add(pc);
+            return;
+        }
         
         GameObject go = Instantiate(playerPrefab, GameManager_Client.instance.transform, true);
         go.name = "Player: " + connectionID + " (" + username + ")";

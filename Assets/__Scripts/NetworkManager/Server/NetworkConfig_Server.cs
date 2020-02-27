@@ -44,7 +44,7 @@ internal static class NetworkConfig_Server
     internal static void Socket_ConnectionReceived(int connectionID)
     {
         NetworkManager_Server.Log("Connection received on index [" + connectionID + "]");
-        NetworkSend_Server.SendMedioConnect(connectionID);
+        //NetworkSend_Server.SendMedioConnect(connectionID);
         NetworkSend_Server.WelcomeMsg(connectionID, "Welcome to the server!");
     }
     

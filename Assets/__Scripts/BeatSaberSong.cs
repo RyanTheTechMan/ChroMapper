@@ -357,7 +357,7 @@ public class BeatSaberSong
         return obj;
     }
 
-    private static JSONNode GetNodeFromFile(string file)
+    public static JSONNode GetNodeFromFile(string file)
     {
         if (!File.Exists(file)) return null;
         try
