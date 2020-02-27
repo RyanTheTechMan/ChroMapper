@@ -74,8 +74,9 @@ public class GameManager_Client : MonoBehaviour
 
     private void SetupDiscordInfo()
     {
+        return;
         NetworkManager_Client.Log("Starting discord info");
-
+        
         if (DiscordController.IsActive)
         {
             DiscordController discordController = (DiscordController) FindObjectOfType(typeof(DiscordController));

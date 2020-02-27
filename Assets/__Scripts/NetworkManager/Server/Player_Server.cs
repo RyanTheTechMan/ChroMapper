@@ -10,6 +10,7 @@ public class Player_Server
     public string img;
     public Vector3 position;
     public Quaternion rotation;
+    public bool isMedioMapperPlayer;
 
     public void TryToMove(float x, float y, float z)
     {

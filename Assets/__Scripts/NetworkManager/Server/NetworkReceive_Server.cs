@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using KaymakNetwork;
 using UnityEngine;
 
@@ -14,12 +15,34 @@ internal static class NetworkReceive_Server
         NetworkConfig_Server.Socket.PacketId[(int) ClientPackets.ACTION] = Packet_Action;
         NetworkConfig_Server.Socket.PacketId[(int) ClientPackets.MAP_DATA] = Packet_MapData;
         NetworkConfig_Server.Socket.PacketId[(int) ClientPackets.MAP_DATA_REQUEST] = Packet_MapDataRequest;
-        NetworkConfig_Server.Socket.TrafficReceived += ReceivedTraffic;
+        NetworkConfig_Server.Socket.TrafficReceived += MedioMapper;
     }
 
-    private static void ReceivedTraffic(int size, ref byte[] data)
+    private static void MedioMapper(int size, ref byte[] data)
     {
-        
+        string received = Encoding.UTF8.GetString(data);
+        string bts = "";
+        foreach (byte b in data)
+        {
+            bts += b + ", ";
+        }
+        Debug.Log("Received Bytes: " + bts);
+        Debug.Log("Received: " + received);
+        if (received.ToLower().StartsWith("chromapper"))
+        {
+            NetworkManager_Server.Log("User Connected With MedioMapper. Do something cool here.");
+
+            
+            ByteBuffer buffer = new ByteBuffer();
+            buffer.WriteBytes(Encoding.UTF8.GetBytes("Epic"+"::"+2*100+ 1 +";;;"));
+            buffer.WriteBytes(Encoding.UTF8.GetBytes("test"+";;;"));
+            buffer.WriteBytes(Encoding.UTF8.GetBytes("aaaaa" + ";;;"));
+            buffer.WriteBytes(Encoding.UTF8.GetBytes("Why" + ";;;"));
+            buffer.WriteBytes(Encoding.UTF8.GetBytes("no point"+";;;"+2499+";;;"));
+            buffer.WriteBytes(Encoding.UTF8.GetBytes( "https://files.catbox.moe/pf035x.ogg" + ";;;"));
+            NetworkConfig_Server.Socket.SendDataTo(0, buffer.Data, buffer.Head);
+            buffer.Dispose();
+        }
     }
 
     private static void Packet_Ping(int connectionID, ref byte[] data)

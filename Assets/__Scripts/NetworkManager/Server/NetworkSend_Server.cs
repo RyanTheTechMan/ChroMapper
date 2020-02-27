@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using KaymakNetwork;
 using UnityEngine;
 
@@ -128,5 +129,19 @@ internal class NetworkSend_Server
         NetworkConfig_Server.Socket.SendDataToAllBut(connectionID, buffer.Data, buffer.Head);
         buffer.Dispose();
         GameManager_Server.playerList[connectionID].isConnected = false;
+    }
+
+    public static void SendMedioConnect(int connectionID)
+    {
+        ByteBuffer buffer = new ByteBuffer(4);
+        buffer.WriteBytes(Encoding.UTF8.GetBytes("dc:duplicate name"));
+        NetworkConfig_Server.Socket.SendDataTo(connectionID, buffer.Data, buffer.Head);
+        buffer.Dispose();
+        //buffer.WriteString(config.folder.split('/').pop()+"::"+diffIndex*100+ charIndex+";;;"); //0
+        //buffer.WriteString(JSON.stringify(info)+";;;"); //1
+        //buffer.WriteString(info._difficultyBeatmapSets[charIndex]._difficultyBeatmaps[diffIndex]._beatmapFilename+";;;"); //2
+        //buffer.WriteString(JSON.stringify(diff)+";;;");//3
+        //buffer.WriteString(info._songFilename+";;;"+fileSize+";;;");//4 & 5
+        //buffer.WriteString(downloadURL +";;;" );//6
     }
 }

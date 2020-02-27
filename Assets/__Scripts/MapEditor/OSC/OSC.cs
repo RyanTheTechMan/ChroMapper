@@ -192,6 +192,7 @@ public class UDPPacketIO
     /// <returns>True on success, false on failure.</returns>
     public bool Open()
     {
+        return false;
         try
         {
             Sender = new UdpClient();
