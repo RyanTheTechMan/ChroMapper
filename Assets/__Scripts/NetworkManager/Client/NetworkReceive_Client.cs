@@ -87,16 +87,12 @@ internal abstract class NetworkReceive_Client
         BeatmapObject.Type beatmapObjectType = (BeatmapObject.Type) buffer.ReadInt32();
         buffer.Dispose();
 
-        NetworkManager_Client.Log("Received a {2} action with data: {0} and object type {1}", beatmapObject,
-            beatmapObjectType.ToString(), beatmapActionType.ToString());
-
-        List<BeatmapObjectContainerCollection> beatmapActionContainers = GameManager_Client.instance
-            .BeatmapActionContainer.GetComponents<BeatmapObjectContainerCollection>().ToList(); //This will be changed
+        NetworkManager_Client.Log("Received a {2} action with data: {0} and object type {1}", beatmapObject, beatmapObjectType.ToString(), beatmapActionType.ToString());
 
         JSONNode node = JSON.Parse(beatmapObject);
-
+        
         BeatmapObject bo;
-
+        
         switch (beatmapObjectType)
         {
             case BeatmapObject.Type.NOTE:
@@ -115,14 +111,10 @@ internal abstract class NetworkReceive_Client
                 bo = new BeatmapBPMChange(node) {beatmapType = beatmapObjectType};
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(beatmapObjectType),
-                    "Invalid Beatmap Object Type Received!!!");
+                throw new ArgumentOutOfRangeException(nameof(beatmapObjectType),"Invalid Beatmap Object Type Received!!!");
         }
 
-        beatmapActionContainers.FirstOrDefault(x => x.ContainerType == beatmapObjectType)
-            ?.SpawnObject(bo, out _, false);
-        GameManager_Client.instance.TracksManager.RefreshTracks();
-
+        BeatmapObjectContainerCollection.GetCollectionForType(beatmapObjectType)?.SpawnObject(bo);
     }
 
     private static void Packet_Kick(ref byte[] data)

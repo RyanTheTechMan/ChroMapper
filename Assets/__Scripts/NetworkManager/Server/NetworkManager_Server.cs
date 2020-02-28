@@ -20,7 +20,13 @@ public class NetworkManager_Server : MonoBehaviour
         }
         Log("Network Initialized");
     }
-    
+
+    private void OnDestroy()
+    {   //todo kick all clients first
+        NetworkConfig_Server.Socket.StopListening();
+        NetworkConfig_Server.Socket.Dispose();
+    }
+
     public static void Log(string msg, dynamic parm1 = null, dynamic parm2 = null, dynamic parm3 = null)
     {
         string c0 = "</color>";

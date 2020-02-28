@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Discord;
-using SimpleJSON;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 public class GameManager_Client : MonoBehaviour
 {
@@ -42,7 +40,7 @@ public class GameManager_Client : MonoBehaviour
     /// <summary>
     /// Use 'TemporaryDirectory.FullName' to get the location.
     /// </summary>
-    public static readonly DirectoryInfo TemporaryDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()));
+    public static readonly DirectoryInfo TemporaryDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString())); //todo fix this so It returns the same directory until destroy
 
     private void Awake()
     {
@@ -52,6 +50,7 @@ public class GameManager_Client : MonoBehaviour
     private void OnDestroy()
     {
         if(TemporaryDirectory.Exists) TemporaryDirectory.Delete(true);
+        if(NetworkConfig_Client.socket.IsConnected) NetworkConfig_Client.socket.Disconnect();
     }
 
     private void OnEnable()
@@ -214,6 +213,9 @@ public class GameManager_Client : MonoBehaviour
         currentCamera = FindObjectOfType<CameraController>().gameObject;
         LONScript = currentCamera.GetComponent<SendLocationOverNetwork>();
 
+        LONScript.enabled = true;
+        FindObjectOfType<SendBeatmapActionOverNetwork>().enabled = true;
+
         TracksManager = FindObjectOfType<TracksManager>();
         BeatmapActionContainer = TracksManager.gameObject.transform;
         
@@ -224,6 +226,7 @@ public class GameManager_Client : MonoBehaviour
             foreach (Player_Client pc in initQueue)
             {
                 NetworkManager_Client.instance.InitNetworkPlayer(pc.ConnectionID, pc.Setup_CurrentPlayer, pc.Username, pc.Avatar);
+                Debug.Log("Now running Init Player for: " + pc.Username + " : " + pc.ConnectionID);
             }
 
             initQueue = null;
@@ -236,6 +239,19 @@ public class GameManager_Client : MonoBehaviour
         if (initialScene.name == "05_MultiplayerHelper" && scene.name == "03_Mapper")
         {
             SceneTransitionManager.Instance.AddLoadRoutine(LoadIntoMapperSceneFromMultiplayer());
+        }
+
+        if (scene.name != "03_Mapper" && scene.name != "04_Options")
+        {
+            foreach (NetworkManager_Client c in FindObjectsOfType<NetworkManager_Client>())
+            {
+                Destroy(c.gameObject);
+            }
+
+            foreach (NetworkManager_Server s in FindObjectsOfType<NetworkManager_Server>())
+            {
+                Destroy(s.gameObject);
+            }
         }
     }
 }
