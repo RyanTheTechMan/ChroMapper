@@ -88,27 +88,29 @@ public class NotesContainer : BeatmapObjectContainerCollection {
             note.SetArcVisible(ShowArcVisualizer);
     }
 
-    public override BeatmapObjectContainer SpawnObject(BeatmapObject obj, out BeatmapObjectContainer conflicting, bool removeConflicting = true)
+    public override BeatmapObjectContainer SpawnObject(BeatmapObject obj, out BeatmapObjectContainer conflicting, bool removeConflicting = true, bool refreshMap = true)
     {
-        conflicting = LoadedContainers.FirstOrDefault(x => x.objectData._time == obj._time &&
-            ((BeatmapNote) obj)._lineLayer == ((BeatmapNote) x.objectData)._lineLayer &&
-            ((BeatmapNote) obj)._lineIndex == ((BeatmapNote) x.objectData)._lineIndex &&
-            ((BeatmapNote) obj)._type == ((BeatmapNote) x.objectData)._type &&
-            ConflictingByTrackIDs(obj, x.objectData)
-        );
-        if (conflicting != null && removeConflicting) DeleteObject(conflicting, true, $"Conflicted with a newer object at time {obj._time}");
+        conflicting = null;
+        if (removeConflicting)
+        {
+            conflicting = LoadedContainers.FirstOrDefault(x => x.objectData._time == obj._time &&
+                ((BeatmapNote)obj)._lineLayer == ((BeatmapNote)x.objectData)._lineLayer &&
+                ((BeatmapNote)obj)._lineIndex == ((BeatmapNote)x.objectData)._lineIndex &&
+                ((BeatmapNote)obj)._type == ((BeatmapNote)x.objectData)._type &&
+                ConflictingByTrackIDs(obj, x.objectData)
+            );
+            if (conflicting != null) DeleteObject(conflicting, true, $"Conflicted with a newer object at time {obj._time}");
+        }
         BeatmapNoteContainer beatmapNote = BeatmapNoteContainer.SpawnBeatmapNote(obj as BeatmapNote, ref notePrefab, ref bombPrefab, ref noteAppearanceSO);
         beatmapNote.transform.SetParent(GridTransform);
         beatmapNote.UpdateGridPosition();
         LoadedContainers.Add(beatmapNote);
-        List<BeatmapObjectContainer> highlighted = LoadedContainers.Where(x => x.OutlineVisible &&
-            ((BeatmapNote) x.objectData)._type == ((BeatmapNote) obj)._type).ToList();
-        foreach (BeatmapObjectContainer container in highlighted)
+        foreach (BeatmapObjectContainer container in LoadedContainers)
         {
-            if (!SelectionController.IsObjectSelected(container)) container.OutlineVisible = false;
+            if (container.OutlineVisible && !SelectionController.IsObjectSelected(container)) container.OutlineVisible = false;
         }
         if (Settings.Instance.HighlightLastPlacedNotes) beatmapNote.SetOutlineColor(Color.magenta);
-        SelectionController.RefreshMap();
+        if (refreshMap) SelectionController.RefreshMap();
         return beatmapNote;
     }
 }

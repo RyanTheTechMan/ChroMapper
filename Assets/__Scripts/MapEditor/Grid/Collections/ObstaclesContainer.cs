@@ -47,7 +47,7 @@ public class ObstaclesContainer : BeatmapObjectContainerCollection
 
     void OnPlayToggle(bool playing)
     {
-        UseChunkLoading = !playing;
+        //UseChunkLoading = !playing;
         foreach (BeatmapObjectContainer c in LoadedContainers) c.SafeSetActive(true);
         RefreshRenderers();
         if (playing)
@@ -67,19 +67,23 @@ public class ObstaclesContainer : BeatmapObjectContainerCollection
         obstacleAppearanceSO.defaultObstacleColor = obstacle;
     }
 
-    public override BeatmapObjectContainer SpawnObject(BeatmapObject obj, out BeatmapObjectContainer conflicting, bool removeConflicting = true)
+    public override BeatmapObjectContainer SpawnObject(BeatmapObject obj, out BeatmapObjectContainer conflicting, bool removeConflicting = true, bool refreshMap = true)
     {
-        conflicting = LoadedContainers.FirstOrDefault(x => x.objectData._time == obj._time &&
-            ((BeatmapObstacle) obj)._lineIndex == ((BeatmapObstacle) x.objectData)._lineIndex &&
-            ((BeatmapObstacle) obj)._type == ((BeatmapObstacle) x.objectData)._type &&
-            ConflictingByTrackIDs(obj, x.objectData)
-        );
-        if (conflicting != null && removeConflicting) DeleteObject(conflicting, true, $"Conflicted with a newer object at time {obj._time}");
+        conflicting = null;
+        if (removeConflicting)
+        {
+            conflicting = LoadedContainers.FirstOrDefault(x => x.objectData._time == obj._time &&
+                ((BeatmapObstacle)obj)._lineIndex == ((BeatmapObstacle)x.objectData)._lineIndex &&
+                ((BeatmapObstacle)obj)._type == ((BeatmapObstacle)x.objectData)._type &&
+                ConflictingByTrackIDs(obj, x.objectData)
+            );
+            if (conflicting != null) DeleteObject(conflicting, true, $"Conflicted with a newer object at time {obj._time}");
+        }
         BeatmapObstacleContainer beatmapObstacle = BeatmapObstacleContainer.SpawnObstacle(obj as BeatmapObstacle, AudioTimeSyncController, ref obstaclePrefab, ref obstacleAppearanceSO);
         beatmapObstacle.transform.SetParent(GridTransform);
         beatmapObstacle.UpdateGridPosition();
         LoadedContainers.Add(beatmapObstacle);
-        SelectionController.RefreshMap();
+        if (refreshMap) SelectionController.RefreshMap();
         return beatmapObstacle;
     }
 }

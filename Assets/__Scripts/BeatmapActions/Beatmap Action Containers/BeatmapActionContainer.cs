@@ -17,7 +17,6 @@ public class BeatmapActionContainer : MonoBehaviour
     
     private void Start()
     {
-        collections = selection.collections.ToList();
         instance = this;
     }
     
@@ -64,13 +63,11 @@ public class BeatmapActionContainer : MonoBehaviour
 
     public class BeatmapActionParams
     {
-        public List<BeatmapObjectContainerCollection> collections;
         public SelectionController selection;
         public NodeEditorController nodeEditor;
         public TracksManager tracksManager;
         public BeatmapActionParams(BeatmapActionContainer container)
         {
-            collections = container.collections;
             selection = container.selection;
             nodeEditor = container.nodeEditor;
             tracksManager = container.tracksManager;
