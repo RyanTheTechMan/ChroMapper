@@ -162,6 +162,8 @@ internal abstract class NetworkReceive_Client
         int totalChunks = buffer.ReadInt32();
         string fileName = buffer.ReadString();
         byte[] chunk = buffer.ReadBytes();
+        short extra1 = buffer.ReadInt16();
+        short extra2 = buffer.ReadInt16();
         buffer.Dispose();
 
         if (GameManager_Client.instance.mapDataRequest != networkMapDataType)
@@ -183,6 +185,16 @@ internal abstract class NetworkReceive_Client
         
         if (chunkID == totalChunks)
         {
+            if (networkMapDataType == NetworkMapData_Type.SONG)
+            {
+                GameManager_Client.MapDataHelper[0] = fileName;
+            }
+            else if (networkMapDataType == NetworkMapData_Type.DIFFICULTY)
+            {
+                GameManager_Client.MapDataHelper[1] = extra1.ToString();
+                GameManager_Client.MapDataHelper[2] = extra2.ToString();
+            }
+            
             NetworkManager_Client.Log("Saving data on chunk {0}/{1}", chunkID, totalChunks);
             string folderLocation = GameManager_Client.TemporaryDirectory.FullName;
             GameManager_Client.instance.SaveMapData(folderLocation + "/" + fileName);

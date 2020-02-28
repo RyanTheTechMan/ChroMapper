@@ -97,6 +97,21 @@ internal static class NetworkSend_Client
             buffer.WriteInt32(clientIDToSendTo); //The ID to send the data to
             buffer.WriteString(fileLocation.Substring(fileLocation.LastIndexOf("/", StringComparison.Ordinal) + 1)); //The Name of the file
             buffer.WriteBytes(sendingBuffer); //Chunk Data
+            if (type == NetworkMapData_Type.INFO)
+            {
+                //Grab index of beatmap set in info.dat
+                int beatmapSetIndex = BeatSaberSongContainer.Instance.song.difficultyBeatmapSets.IndexOf(BeatSaberSongContainer.Instance.difficultyData.parentBeatmapSet);
+                //Grab index of difficulty data in beatmap set
+                int difficultyDataIndex = BeatSaberSongContainer.Instance.song.difficultyBeatmapSets[beatmapSetIndex].difficultyBeatmaps.IndexOf(BeatSaberSongContainer.Instance.difficultyData);
+                buffer.WriteInt16((short)beatmapSetIndex);
+                buffer.WriteInt16((short)difficultyDataIndex);
+            }
+            else
+            {
+                buffer.WriteInt16(0); //Blank
+                buffer.WriteInt16(0); //Blank
+            }
+            
             NetworkConfig_Client.socket.SendData(buffer.Data, buffer.Head);
         
             buffer.Dispose();

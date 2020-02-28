@@ -52,7 +52,7 @@ public class SongList : MonoBehaviour {
 
     public void LoadMultiplayer()
     {
-        SceneManager.LoadSceneAsync(5);
+        SceneTransitionManager.Instance.LoadScene(5);
     }
 
     public void RefreshSongList(bool search) {

@@ -19,10 +19,6 @@ public class NetworkManager_Client : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-    void Start()
-    {
-    }
-
     internal void SetupNetwork()
     {
         Log("Starting Client");

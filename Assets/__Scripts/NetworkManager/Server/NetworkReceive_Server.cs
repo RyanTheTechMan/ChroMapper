@@ -119,6 +119,8 @@ internal static class NetworkReceive_Server
         int clientIdToSendTo = buffer.ReadInt32();
         string fileName = buffer.ReadString();
         byte[] chunkData = buffer.ReadBytes();
+        short extra1 = buffer.ReadInt16();
+        short extra2 = buffer.ReadInt16();
 
         buffer.Dispose();
 
@@ -128,7 +130,7 @@ internal static class NetworkReceive_Server
             return;
         }
         
-        NetworkSend_Server.SendMapDataChunk(clientIdToSendTo, chunkId, totalChunks, networkMapDataType, fileName, chunkData);
+        NetworkSend_Server.SendMapDataChunk(clientIdToSendTo, chunkId, totalChunks, networkMapDataType, fileName, chunkData, extra1, extra2);
         
         //string byteChunk = chunkData.Aggregate("", (current, b) => current + (b + ", "));
         //NetworkManager_Server.Log("Receiving Map Data For {0} Chunk {1} Data: {2}", networkMapDataType.ToString(), chunkId + "/" + totalChunks, byteChunk);

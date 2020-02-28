@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -46,6 +47,7 @@ public class SceneTransitionManager : MonoBehaviour {
         if (IsLoading) externalRoutines.Enqueue(routine);
     }
 
+    [ObsoleteAttribute ("Literally just use AddLoadRoutine", true)]
     public void AddAsyncLoadRoutine(IEnumerator routine) {
         if (IsLoading) externalRoutines.Enqueue(routine);
     }

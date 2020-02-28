@@ -30,6 +30,8 @@ public class GameManager_Client : MonoBehaviour
 
     [HideInInspector] public NetworkMapData_Type mapDataRequest = NetworkMapData_Type.NONE;
     public static byte[][] MapDataBytes;
+    public static string[] MapDataHelper = new string[3];
+    private static Scene initialScene;
 
     public string hostValidator = Guid.NewGuid().ToString();
     
@@ -41,6 +43,11 @@ public class GameManager_Client : MonoBehaviour
     /// Use 'TemporaryDirectory.FullName' to get the location.
     /// </summary>
     public static readonly DirectoryInfo TemporaryDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()));
+
+    private void Awake()
+    {
+        initialScene = gameObject.scene;
+    }
 
     private void OnDestroy()
     {
@@ -67,6 +74,12 @@ public class GameManager_Client : MonoBehaviour
         
         SetupDiscordInfo();
         DontDestroyOnLoad(this);
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void Start()
@@ -151,19 +164,53 @@ public class GameManager_Client : MonoBehaviour
         
         //BeatSaberSongContainer.Instance.song = BeatSaberSong.GetSongFromFolder(TemporaryDirectory.FullName);
         
-        JSONNode mainNode = BeatSaberSong.GetNodeFromFile(TemporaryDirectory.FullName + "/" + "info.dat");
-        if (mainNode == null)
+        BeatSaberSongContainer.Instance.song = BeatSaberSong.GetSongFromFolder(TemporaryDirectory.FullName);
+        
+        BeatSaberSongContainer.Instance.difficultyData = BeatSaberSongContainer.Instance.song
+            .difficultyBeatmapSets[Convert.ToInt32(MapDataHelper[1])]
+            .difficultyBeatmaps[Convert.ToInt32(MapDataHelper[2])];
+        
+        BeatSaberSongContainer.Instance.map = BeatSaberSongContainer.Instance.song.GetMapFromDifficultyBeatmap(BeatSaberSongContainer.Instance.difficultyData);
+
+        if (File.Exists(TemporaryDirectory.FullName + "/" + MapDataHelper[0]))
         {
-            Debug.LogWarning("Failed to get difficulty json file");
+            if (MapDataHelper[0].ToLower().EndsWith("ogg") ||  MapDataHelper[0].ToLower().EndsWith("egg"))
+            {
+                UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip($"file:///{Uri.EscapeDataString($"{TemporaryDirectory.FullName}/{MapDataHelper[0]}")}", AudioType.OGGVORBIS);
+                yield return www.SendWebRequest();
+                Debug.Log("Song loaded!");
+                AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
+                if (clip == null)
+                {
+                    Debug.Log("Error getting Audio data!");
+                    SceneTransitionManager.Instance.CancelLoading("Error getting Audio data!");
+                }
+                clip.name = "Song";
+                BeatSaberSongContainer.Instance.loadedSong = clip;
+            }
+            else
+            {
+                Debug.Log("Incompatible file type! WTF!?");
+                SceneTransitionManager.Instance.CancelLoading("Incompatible audio type!");
+                yield break;
+            }
+        }
+        else
+        {
+            SceneTransitionManager.Instance.CancelLoading("Audio file does not exist!");
+            Debug.Log("Song does not exist! WTF!?");
+            Debug.Log(TemporaryDirectory.FullName + "/" + MapDataHelper[0]);
             yield break;
         }
-        
-        BeatSaberSongContainer.Instance.map = BeatSaberMap.GetBeatSaberMapFromJSON(mainNode, TemporaryDirectory.FullName + "/" + "info.dat");
-        StartCoroutine(FindObjectOfType<SongInfoEditUI>().GetSongFromDifficultyData(null));
-        
-        SceneManager.LoadSceneAsync(3);
-        //SceneManager.UnloadSceneAsync(5);
 
+        SceneTransitionManager.Instance.LoadScene(3);
+        
+        yield return this;
+    }
+
+    private IEnumerator LoadIntoMapperSceneFromMultiplayer()
+    {
+        
         currentCamera = FindObjectOfType<CameraController>().gameObject;
         LONScript = currentCamera.GetComponent<SendLocationOverNetwork>();
 
@@ -181,7 +228,14 @@ public class GameManager_Client : MonoBehaviour
 
             initQueue = null;
         }
-        
-        yield return this;
+        yield break;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
+    {
+        if (initialScene.name == "05_MultiplayerHelper" && scene.name == "03_Mapper")
+        {
+            SceneTransitionManager.Instance.AddLoadRoutine(LoadIntoMapperSceneFromMultiplayer());
+        }
     }
 }
