@@ -16,17 +16,19 @@ public class GameManager_Client : MonoBehaviour
 
     public static GameManager_Client instance;
     public GameObject currentCamera;
-    [HideInInspector] public SendLocationOverNetwork LONScript;
-    [HideInInspector] public Transform BeatmapActionContainer;
     public Slider loadingSlider;
-    [HideInInspector] public TextMeshProUGUI SliderText;
+    [Space][Space]
+    public SendLocationOverNetwork LONScript;
+    public Transform BeatmapActionContainer;
     
-    [HideInInspector] public TracksManager TracksManager;
+    public TextMeshProUGUI SliderText;
+    
+    public TracksManager TracksManager;
 
-    [HideInInspector] public string discordUsername;
-    [HideInInspector] public string discordAvatar;
+    public string discordUsername;
+    public string discordAvatar;
 
-    [HideInInspector] public NetworkMapData_Type mapDataRequest = NetworkMapData_Type.NONE;
+    public NetworkMapData_Type mapDataRequest = NetworkMapData_Type.NONE;
     public static byte[][] MapDataBytes;
     public static string[] MapDataHelper = new string[3];
     private static Scene initialScene;
@@ -60,9 +62,11 @@ public class GameManager_Client : MonoBehaviour
         Scene activeScene = SceneManager.GetActiveScene();
         if (activeScene == SceneManager.GetSceneByName("03_Mapper"))
         {
+            currentCamera = FindObjectOfType<Camera>().gameObject;
             TracksManager = FindObjectOfType<TracksManager>();
             BeatmapActionContainer = TracksManager.gameObject.transform;
             LONScript = currentCamera.GetComponent<SendLocationOverNetwork>();
+            GetComponent<SendBeatmapActionOverNetwork>().enabled = true;
             inMapperScene = true;
         }
         else if (activeScene == SceneManager.GetSceneByName("05_MultiplayerHelper"))
@@ -209,39 +213,33 @@ public class GameManager_Client : MonoBehaviour
 
     private IEnumerator LoadIntoMapperSceneFromMultiplayer()
     {
-        
-        currentCamera = FindObjectOfType<CameraController>().gameObject;
-        LONScript = currentCamera.GetComponent<SendLocationOverNetwork>();
+        instance.currentCamera = FindObjectOfType<Camera>().gameObject;
+        instance.LONScript = instance.currentCamera.GetComponent<SendLocationOverNetwork>();
 
-        LONScript.enabled = true;
-        FindObjectOfType<SendBeatmapActionOverNetwork>().enabled = true;
+        instance.LONScript.enabled = true;
+        GetComponent<SendBeatmapActionOverNetwork>().enabled = true;
 
-        TracksManager = FindObjectOfType<TracksManager>();
-        BeatmapActionContainer = TracksManager.gameObject.transform;
+        instance.TracksManager = FindObjectOfType<TracksManager>();
+        instance.BeatmapActionContainer = instance.TracksManager.gameObject.transform;
         
         inMapperScene = true;
 
-        if (initQueue.Count > 0)
+        if (instance.initQueue.Count > 0)
         {
-            foreach (Player_Client pc in initQueue)
+            foreach (Player_Client pc in instance.initQueue)
             {
                 NetworkManager_Client.instance.InitNetworkPlayer(pc.ConnectionID, pc.Setup_CurrentPlayer, pc.Username, pc.Avatar);
                 Debug.Log("Now running Init Player for: " + pc.Username + " : " + pc.ConnectionID);
             }
 
-            initQueue = null;
+            instance.initQueue = null;
         }
         yield break;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
-        if (initialScene.name == "05_MultiplayerHelper" && scene.name == "03_Mapper")
-        {
-            SceneTransitionManager.Instance.AddLoadRoutine(LoadIntoMapperSceneFromMultiplayer());
-        }
-
-        if (scene.name != "03_Mapper" && scene.name != "04_Options")
+        if (scene.name != "03_Mapper" && scene.name != "04_Options" && scene.name != "05_MultiplayerHelper")
         {
             foreach (NetworkManager_Client c in FindObjectsOfType<NetworkManager_Client>())
             {
@@ -252,6 +250,13 @@ public class GameManager_Client : MonoBehaviour
             {
                 Destroy(s.gameObject);
             }
+            return;
+        }
+        
+        Debug.Log("Scene: " + scene.name + "\nInitScene: " + initialScene.name);
+        if (initialScene.name == "DontDestroyOnLoad" && scene.name == "03_Mapper")
+        {
+            SceneTransitionManager.Instance.AddLoadRoutine(LoadIntoMapperSceneFromMultiplayer());
         }
     }
 }

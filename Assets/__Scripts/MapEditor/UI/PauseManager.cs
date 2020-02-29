@@ -7,6 +7,8 @@ public class PauseManager : MonoBehaviour {
     [SerializeField] private AnimationCurve fadeOutCurve;
     private PlatformDescriptor platform;
     [SerializeField] private AutoSaveController saveController;
+    
+    [SerializeField] private GameObject multiplayerHelper;
 
     public static bool IsPaused;
     private bool ShowsHelpText = true;
@@ -70,7 +72,8 @@ public class PauseManager : MonoBehaviour {
     {
         if (result == 0)
         {
-            GameObject go = GameObject.Find("Multiplayer Support");
+
+            GameObject go = Instantiate(multiplayerHelper);
             go.GetComponent<NetworkManager_Server>().enabled = true;
             go.GetComponent<NetworkManager_Client>().enabled = true;
             go.GetComponent<GameManager_Client>().enabled = true;
