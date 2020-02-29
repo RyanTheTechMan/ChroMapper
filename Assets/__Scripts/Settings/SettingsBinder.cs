@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
 public abstract class SettingsBinder : Editor
 {
-    protected Dictionary<string, FieldInfo> AllFieldInfos;
-    public abstract object ModifyValue(object value);
-}
+    protected Dictionary<string, FieldInfo> AllFieldInfos = GetAllFieldInfos();
 
-public static class SettingsBinder_Editor
-{
+    public virtual object ModifyValue(object value) { return value; }
 
-    public static Dictionary<string, FieldInfo> AllFieldInfos(){ 
+    private static Dictionary<string, FieldInfo> GetAllFieldInfos(){ 
         Dictionary<string, FieldInfo> d = new Dictionary<string, FieldInfo>();
         
         Type type = typeof(Settings);
@@ -27,33 +25,9 @@ public static class SettingsBinder_Editor
         return d;
     }
 
-    public static List<string> GenerateList(Dictionary<string, FieldInfo> allFieldInfos, string type)
+    protected static List<string> GenerateList(Dictionary<string, FieldInfo> allFieldInfos, Type type)
     {
-        List<string> fieldNames = new List<string>();
-
-        foreach (string s in allFieldInfos.Keys)
-        {
-            Type fType = allFieldInfos[s].FieldType;
-            
-            switch (type)
-            {
-                case "BetterToggle" when fType == typeof(bool):
-                    fieldNames.Add(s);
-                    break;
-                case "BetterSlider" when fType == typeof(float) || fType == typeof(int):
-                    fieldNames.Add(s);
-                    break;
-                case "VolumeSlider" when fType == typeof(float):
-                    fieldNames.Add(s);
-                    break;
-                case "BetterInputField" when fType == typeof(float) || fType == typeof(int) || fType == typeof(string):
-                    fieldNames.Add(s);
-                    break;
-                case "TMP_Dropdown" when fType == typeof(int):
-                    fieldNames.Add(s);
-                    break;
-            }
-        }
+        List<string> fieldNames = allFieldInfos.Keys.Where(s => Attribute.IsDefined(allFieldInfos[s], type)).ToList();
 
         if (fieldNames.Count == 0)
         {
@@ -68,4 +42,5 @@ public static class SettingsBinder_Editor
         
         return fieldNames;
     }
+    
 }

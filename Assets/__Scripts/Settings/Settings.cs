@@ -6,64 +6,63 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 using System.Globalization;
-using __Scripts.MapEditor.Hit_Sounds;
 
 public class Settings {
 
     private static Settings _instance;
     public static Settings Instance => _instance ?? (_instance = Load());
 
-    public string BeatSaberInstallation = "";
+    [BetterInputField] public string BeatSaberInstallation = "";
     public string CustomSongsFolder => ConvertToDirectory(BeatSaberInstallation + "/Beat Saber_Data/CustomLevels");
     public string CustomWIPSongsFolder => ConvertToDirectory(BeatSaberInstallation + "/Beat Saber_Data/CustomWIPLevels");
-    public bool DiscordRPCEnabled = true;
-    public bool OSC_Enabled = false;
-    public string OSC_IP = "127.0.0.1";
-    public string OSC_Port = "8080";
-    public int EditorScale = 4;
-    public int ChunkDistance = 5;
-    public int AutoSaveInterval = 5;
-    public int InitialLoadBatchSize = 100;
-    public bool InvertNoteControls = false;
-    public bool WaveformGenerator = false;
-    public bool CountersPlus = false;
-    public bool PlaceChromaEvents = false;
-    public bool PickColorFromChromaEvents = false;
-    public bool PlaceOnlyChromaEvents = false;
-    public bool BongoBoye = false;
-    public bool AutoSave = true;
-    public float Volume = 1;
-    public float MetronomeVolume = 0;
-    public bool NodeEditor_Enabled = false;
-    public bool NodeEditor_UseKeybind = false;
+    [BetterToggle] public bool DiscordRPCEnabled = true;
+    [BetterToggle] public bool OSC_Enabled = false;
+    [BetterInputField] public string OSC_IP = "127.0.0.1";
+    [BetterInputField] public string OSC_Port = "8080";
+    [BetterSlider] public int EditorScale = 4;
+    [BetterSlider] public int ChunkDistance = 5;
+    [BetterInputField] public int AutoSaveInterval = 5;
+    [BetterInputField] public int InitialLoadBatchSize = 100;
+    [BetterToggle] public bool InvertNoteControls = false;
+    [BetterToggle] public bool WaveformGenerator = false;
+    [BetterToggle] public bool CountersPlus = false;
+    [BetterToggle] public bool PlaceChromaEvents = false;
+    [BetterToggle] public bool PickColorFromChromaEvents = false;
+    [BetterToggle] public bool PlaceOnlyChromaEvents = false;
+    [BetterToggle] public bool BongoBoye = false;
+    [BetterToggle] public bool AutoSave = true;
+    [BetterVolumeSlider] public float Volume = 1;
+    [BetterVolumeSlider] public float MetronomeVolume = 0;
+    [BetterToggle] public bool NodeEditor_Enabled = false;
+    [BetterToggle] public bool NodeEditor_UseKeybind = false;
     public float PostProcessingIntensity = 1;
-    public bool Reminder_SavingCustomEvents = true;
-    public bool DarkTheme = false;
-    public bool BoxSelect = false;
-    public bool DontPlacePerfectZeroDurationWalls = true;
-    public float Camera_MovementSpeed = 15;
-    public float Camera_MouseSensitivity = 2;
-    public bool EmulateChromaLite = true; //To get Chroma RGB lights
-    public bool EmulateChromaAdvanced = true; //Ring propagation and other advanced chroma features
-    public bool RotateTrack = true; // 360/90 mode
-    public bool HighlightLastPlacedNotes = false;
-    public bool InvertPrecisionScroll = false;
-    public bool Reminder_Loading360Levels = true;
-    public bool Reminder_SettingsFailed = true;
-    public bool AdvancedShit = false;
-    public bool InstantEscapeMenuTransitions = false;
-    public bool ChromaticAberration = true;
-    public int Offset_Spawning = 4;
-    public int Offset_Despawning = 1;
-    public int NoteHitSound = 0;
-    public float NoteHitVolume = 0.5f;
-    public float PastNotesGridScale = 0.5f;
-    public float CameraFOV = 60f;
-    public bool WaveformWorkflow = true;
-    public bool Load_Events = true;
-    public bool Load_Notes = true;
-    public bool Load_Obstacles = true;
-    public bool Load_Others = true;
+    [BetterToggle] public bool Reminder_SavingCustomEvents = true;
+    [BetterToggle] public bool DarkTheme = false;
+    [BetterToggle] public bool BoxSelect = false;
+    [BetterToggle] public bool DontPlacePerfectZeroDurationWalls = true;
+    [BetterSlider] public float Camera_MovementSpeed = 15;
+    [BetterSlider] public float Camera_MouseSensitivity = 2;
+    [BetterToggle] public bool EmulateChromaLite = true; //To get Chroma RGB lights
+    [BetterToggle] public bool EmulateChromaAdvanced = true; //Ring propagation and other advanced chroma features
+    [BetterToggle] public bool RotateTrack = true; // 360/90 mode
+    [BetterToggle] public bool HighlightLastPlacedNotes = false;
+    [BetterToggle] public bool InvertPrecisionScroll = false;
+    [BetterToggle] public bool Reminder_Loading360Levels = true;
+    [BetterToggle] public bool Reminder_SettingsFailed = true;
+    [BetterToggle] public bool AdvancedShit = false;
+    [BetterToggle] public bool InstantEscapeMenuTransitions = false;
+    [BetterToggle] public bool ChromaticAberration = true;
+    [BetterSlider] public int Offset_Spawning = 4;
+    [BetterSlider] public int Offset_Despawning = 1;
+    [BetterDropdown] public int NoteHitSound = 0;
+    [BetterVolumeSlider] public float NoteHitVolume = 0.5f;
+    [BetterSlider] public float PastNotesGridScale = 0.5f;
+    [BetterSlider] public float CameraFOV = 60f;
+    [BetterToggle] public bool WaveformWorkflow = true;
+    [BetterToggle] public bool Load_Events = true;
+    [BetterToggle] public bool Load_Notes = true;
+    [BetterToggle] public bool Load_Obstacles = true;
+    [BetterToggle] public bool Load_Others = true;
 
     public static Dictionary<string, FieldInfo> AllFieldInfos = new Dictionary<string, FieldInfo>();
     
@@ -170,3 +169,9 @@ public class Settings {
     
     public static string ConvertToDirectory(string s) => s.Replace('\\', '/');
 }
+
+public class BetterDropdownAttribute : Attribute {}
+public class BetterInputFieldAttribute : Attribute {}
+public class BetterSliderAttribute : Attribute {}
+public class BetterVolumeSliderAttribute : Attribute {}
+public class BetterToggleAttribute : Attribute {}

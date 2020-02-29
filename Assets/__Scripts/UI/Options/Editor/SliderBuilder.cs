@@ -19,7 +19,6 @@ public class SliderBuilder : SettingsBinder
     private void OnEnable()
     {
         _slider = (BetterSlider) target;
-        AllFieldInfos = SettingsBinder_Editor.AllFieldInfos();
     }
 
     public override void OnInspectorGUI() //Why is this broken on BUILD
@@ -98,7 +97,7 @@ public class SliderBuilder : SettingsBinder
                 if (_slider._endTextEnabled) _slider.valueText.text += _slider._endText;
             }
             
-            List<string> possibleValues = SettingsBinder_Editor.GenerateList(AllFieldInfos, "BetterSlider").ToList();
+            List<string> possibleValues = GenerateList(AllFieldInfos, typeof(BetterSliderAttribute)).ToList();
             int valueToChangeVal = possibleValues.IndexOf(_slider.valueToChange);
             if (valueToChangeVal == -1) valueToChangeVal = 0;
             _slider.valueToChange = possibleValues[EditorGUILayout.Popup("On Value Change Set", valueToChangeVal, possibleValues.ToArray())];

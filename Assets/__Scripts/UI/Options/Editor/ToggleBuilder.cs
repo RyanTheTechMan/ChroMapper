@@ -13,14 +13,12 @@ using Object = UnityEngine.Object;
 public class ToggleBuilder : SettingsBinder
 {
     private bool showHiddenSettings = false;
-    
     private BetterToggle _toggle;
     
     
     private void OnEnable()
     {
         _toggle = (BetterToggle) target;
-        AllFieldInfos = SettingsBinder_Editor.AllFieldInfos();
     }
 
     public override void OnInspectorGUI() //Why is this broken on BUILD
@@ -34,7 +32,7 @@ public class ToggleBuilder : SettingsBinder
             
             //toggle.background.color = toggle.isOn ? toggle.OnColor : toggle.OffColor;
             
-            List<string> possibleValues = SettingsBinder_Editor.GenerateList(AllFieldInfos, "BetterToggle").ToList();
+            List<string> possibleValues = GenerateList(AllFieldInfos, typeof(BetterToggleAttribute)).ToList();
             int valueToChangeVal = possibleValues.IndexOf(_toggle.valueToChange);
             if (valueToChangeVal == -1) valueToChangeVal = 0;
             _toggle.valueToChange = possibleValues[EditorGUILayout.Popup("On Value Change Set", valueToChangeVal, possibleValues.ToArray())];
@@ -58,10 +56,5 @@ public class ToggleBuilder : SettingsBinder
             EditorGUILayout.HelpBox("Error while loading custom editor, showing standard settings.", MessageType.Error);
             base.OnInspectorGUI();
         }
-    }
-
-    public override object ModifyValue(object value)
-    {
-        return value;
     }
 }
