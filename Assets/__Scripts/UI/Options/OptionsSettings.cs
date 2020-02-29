@@ -133,7 +133,7 @@ public class OptionsSettings : MonoBehaviour
         songSpeedSlider.value = OptionsController.Find<SongSpeedController>()?.source.pitch * 10f ?? 10f;
         editorScaleSlider.value = Settings.Instance.EditorScale;
         
-        autoSaveInterval.text =Settings.Instance.AutoSaveInterval.ToString();
+        autoSaveInterval.text = Settings.Instance.AutoSaveInterval.ToString();
         noteLanes.text = OptionsController.Find<NoteLanesController>()?.NoteLanes.ToString() ?? "4";
         #endregion
         

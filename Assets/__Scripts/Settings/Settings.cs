@@ -1,5 +1,6 @@
 ﻿using SimpleJSON;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Reflection;
@@ -64,6 +65,8 @@ public class Settings {
     public bool Load_Obstacles = true;
     public bool Load_Others = true;
 
+    public static Dictionary<string, FieldInfo> AllFieldInfos = new Dictionary<string, FieldInfo>();
+    
     private static Settings Load()
     {
         //Fixes weird shit regarding how people write numbers (20,35 VS 20.35), causing issues in JSON
@@ -85,6 +88,7 @@ public class Settings {
                 try
                 {
                     if (!(info is FieldInfo field)) continue;
+                    AllFieldInfos.Add(field.Name, field);
                     if (mainNode[field.Name] != null)
                         field.SetValue(settings, Convert.ChangeType(mainNode[field.Name].Value, field.FieldType));
                 }catch(Exception e)
@@ -136,5 +140,33 @@ public class Settings {
         return true;
     }
 
+    public static void ApplyOptionByName(string name, object value)
+    {
+        try
+        {
+            AllFieldInfos.TryGetValue(name, out FieldInfo fieldInfo);
+            fieldInfo?.SetValue(Instance, value);
+        }
+        catch (ArgumentException e)
+        {
+            PersistentUI.Instance.ShowDialogBox($"Someone fucked up and failed applying a setting:\n{e}", null, PersistentUI.DialogBoxPresetType.Ok);
+        }
+    }
+    
+    public static object GetOptionByName(string name)
+    {
+        try
+        {
+            AllFieldInfos.TryGetValue(name, out FieldInfo fieldInfo);
+            return fieldInfo?.GetValue(Instance);
+        }
+        catch (ArgumentException e)
+        {
+            PersistentUI.Instance.ShowDialogBox($"Someone fucked up and failed applying a setting:\n{e}", null, PersistentUI.DialogBoxPresetType.Ok);
+        }
+
+        return null;
+    }
+    
     public static string ConvertToDirectory(string s) => s.Replace('\\', '/');
 }

@@ -28,12 +28,15 @@ public class BetterToggle : UIBehaviour, IPointerClickHandler
 
     public ToggleEvent onValueChanged = new ToggleEvent();
 
+    public string valueToChange;
+    
     public void OnPointerClick(PointerEventData eventData)
     {
         isOn = !isOn;
         _slideButtonCoroutine = StartCoroutine(SlideToggle());
         _slideColorCoroutine = StartCoroutine(SlideColor());
-        onValueChanged?.Invoke(isOn);
+        //onValueChanged?.Invoke(isOn);
+        Settings.ApplyOptionByName(valueToChange, isOn);
     }
     
     protected override void Start()

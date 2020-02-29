@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -7,15 +10,17 @@ using UnityEngine.Events;
 using Object = UnityEngine.Object;
 
 [CustomEditor(typeof(BetterToggle)), CanEditMultipleObjects]
-public class ToggleBuilder : Editor
+public class ToggleBuilder : SettingsBinder
 {
     private bool showHiddenSettings = false;
     
     private BetterToggle _toggle;
     
+    
     private void OnEnable()
     {
         _toggle = (BetterToggle) target;
+        AllFieldInfos = SettingsBinder_Editor.AllFieldInfos();
     }
 
     public override void OnInspectorGUI() //Why is this broken on BUILD
@@ -28,11 +33,17 @@ public class ToggleBuilder : Editor
             _toggle.OffColor = EditorGUILayout.ColorField("Toggle Off Color", _toggle.OffColor);
             
             //toggle.background.color = toggle.isOn ? toggle.OnColor : toggle.OffColor;
-
-            serializedObject.Update();
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("onValueChanged"), false);
-            serializedObject.ApplyModifiedProperties();
             
+            List<string> possibleValues = SettingsBinder_Editor.GenerateList(AllFieldInfos, "BetterToggle").ToList();
+            int valueToChangeVal = possibleValues.IndexOf(_toggle.valueToChange);
+            if (valueToChangeVal == -1) valueToChangeVal = 0;
+            _toggle.valueToChange = possibleValues[EditorGUILayout.Popup("On Value Change Set", valueToChangeVal, possibleValues.ToArray())];
+            
+            serializedObject.Update();
+            //EditorGUILayout.PropertyField(serializedObject.FindProperty("onValueChanged"), false);
+            serializedObject.ApplyModifiedProperties();
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
             showHiddenSettings = EditorGUILayout.Toggle("Show Hidden Settings", showHiddenSettings);
             if (showHiddenSettings) base.OnInspectorGUI();
 
@@ -47,5 +58,10 @@ public class ToggleBuilder : Editor
             EditorGUILayout.HelpBox("Error while loading custom editor, showing standard settings.", MessageType.Error);
             base.OnInspectorGUI();
         }
+    }
+
+    public override object ModifyValue(object value)
+    {
+        return value;
     }
 }

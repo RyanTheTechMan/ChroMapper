@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -7,7 +10,7 @@ using UnityEngine.Events;
 using EditorGUIUtility = UnityEditor.Experimental.Networking.PlayerConnection.EditorGUIUtility;
 
 [CustomEditor(typeof(BetterSlider)), CanEditMultipleObjects]
-public class SliderBuilder : Editor
+public class SliderBuilder : SettingsBinder
 {
     private bool showHiddenSettings = false;
     
@@ -16,6 +19,7 @@ public class SliderBuilder : Editor
     private void OnEnable()
     {
         _slider = (BetterSlider) target;
+        AllFieldInfos = SettingsBinder_Editor.AllFieldInfos();
     }
 
     public override void OnInspectorGUI() //Why is this broken on BUILD
@@ -94,6 +98,10 @@ public class SliderBuilder : Editor
                 if (_slider._endTextEnabled) _slider.valueText.text += _slider._endText;
             }
             
+            List<string> possibleValues = SettingsBinder_Editor.GenerateList(AllFieldInfos, "BetterSlider").ToList();
+            int valueToChangeVal = possibleValues.IndexOf(_slider.valueToChange);
+            if (valueToChangeVal == -1) valueToChangeVal = 0;
+            _slider.valueToChange = possibleValues[EditorGUILayout.Popup("On Value Change Set", valueToChangeVal, possibleValues.ToArray())];
             
             EditorGUILayout.Separator();
             EditorGUILayout.Separator();
@@ -114,5 +122,10 @@ public class SliderBuilder : Editor
             EditorGUILayout.HelpBox("Error while loading custom editor, showing standard settings.", MessageType.Error);
             base.OnInspectorGUI();
         }
+    }
+
+    public override object ModifyValue(object value)
+    {
+        return value;
     }
 }

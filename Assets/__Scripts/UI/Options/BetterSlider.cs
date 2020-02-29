@@ -30,6 +30,8 @@ public class BetterSlider : MonoBehaviour
     [SerializeField] private Image ringImage;
     [SerializeField] public TextMeshProUGUI valueText;
 
+    public string valueToChange;
+    
     public float value
     {
         get => slider.value;
