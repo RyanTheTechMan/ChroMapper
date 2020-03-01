@@ -6,7 +6,9 @@ using UnityEngine.UI;
 public class ImageWithIndependentRoundedCorners : MonoBehaviour {
 	
 	public Vector4 r;
-	public Material material;
+	[SerializeField] private Material material;
+	[HideInInspector] public Material mat;
+	[Tooltip("When this is false the inserted material will change the inserted material shader.")] public bool cloneMaterial = true;
 	
 	// xy - position,
 	// zw - halfSize
@@ -63,11 +65,20 @@ public class ImageWithIndependentRoundedCorners : MonoBehaviour {
 	}
 
 	private void Refresh(){
+		if (cloneMaterial)
+		{
+			mat = new Material(material);
+			Image i = GetComponent<Image>();
+			i.material = mat;
+			i.material.name = "Inherited From Round Corners";
+		}
+		else mat = material;
+
 		var rect = ((RectTransform) transform).rect;
 		RecalculateProps(rect.size);
-		material.SetVector(prop_rect2props, rect2props);
-		material.SetVector(prop_halfSize, rect.size * .5f);
-		material.SetVector(prop_radiuses, r);
+		mat.SetVector(prop_rect2props, rect2props);
+		mat.SetVector(prop_halfSize, rect.size * .5f);
+		mat.SetVector(prop_radiuses, r);
 	}
 
 }
