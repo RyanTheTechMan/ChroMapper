@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7fe48fd1439c2c140987144683830b52, type: 3}
-  m_Name: Rawr
+  m_Name: Bongo
   m_EditorClassIdentifier: 
   LongClips:
-  - {fileID: 8300000, guid: 9128a734b2b9a0d46acf5739b04eead3, type: 3}
+  - {fileID: 8300000, guid: c9dc5b1a4215f1542ae1f644bd90992b, type: 3}
   ShortClips:
-  - {fileID: 8300000, guid: ba51a8618ef131c4eafa56d04cbde453, type: 3}
+  - {fileID: 8300000, guid: 8e25a2e5453b0744fae32bc9d9b0282d, type: 3}

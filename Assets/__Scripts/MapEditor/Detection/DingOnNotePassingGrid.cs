@@ -58,7 +58,7 @@ public class DingOnNotePassingGrid : MonoBehaviour {
             case (int) HitSounds.SLICE:
                 callbackController.offset = container.AudioTimeSyncController.GetBeatFromSeconds(0.18f);
                 break;
-            case (int)HitSounds.DISCORD:
+            case (int) HitSounds.DISCORD:
                 Instantiate(discordPingPrefab, gameObject.transform, true);
                 break;
             default:
