@@ -284,7 +284,7 @@ MonoBehaviour:
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
-  m_CharacterValidation: 6
+  m_CharacterValidation: 0
   m_RegexValue: ([a-zA-Z0-9\s_\\.\-\(\):])+(.ogg|.egg)$
   m_GlobalPointSize: 14
   m_CharacterLimit: 0
@@ -545,7 +545,7 @@ GameObject:
   - component: {fileID: 7370313284570704370}
   - component: {fileID: 7370313284570704373}
   m_Layer: 5
-  m_Name: Cover Image
+  m_Name: Text InputField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

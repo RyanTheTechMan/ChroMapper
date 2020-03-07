@@ -36,8 +36,40 @@ public class PlatformListManager : MonoBehaviour
     private static readonly Vector3 EPos = new Vector3(0,-49,0);
     private static readonly Vector3 CPos = new Vector3(0,-8,0);
 
+    private bool lastSectionBool;
+    private Coroutine _moveUpCoroutine;
+    
     private void LateUpdate()
     {
-        catTitle.localPosition = _scrollbar.value <= Mathf.Abs((_customPlatLength + 2) / (_environmentLength + _customPlatLength)) ? CPos : EPos;
+        bool b = 1 - _scrollbar.value >= (float)_environmentLength / (_environmentLength + _customPlatLength);
+        
+        if (lastSectionBool != b)
+        {
+            _moveUpCoroutine = StartCoroutine(MoveSectionTitle(b));
+            lastSectionBool = b;
+        }
+    }
+    
+    private IEnumerator MoveSectionTitle(bool moveUp)
+    {
+        if(_moveUpCoroutine != null) StopCoroutine(_moveUpCoroutine);
+        
+        float startTime = Time.time;
+        
+        while (true)
+        {
+            catTitle.localPosition = Vector3.Lerp(catTitle.localPosition, moveUp ? CPos : EPos, (Time.time / startTime) * 0.2f);
+            if (catTitle.localPosition == CPos)
+            {
+                catTitle.localPosition = CPos;
+                yield break;
+            }
+            else if (catTitle.localPosition == EPos)
+            {
+                catTitle.localPosition = EPos;
+                yield break;
+            }
+            yield return new WaitForFixedUpdate();
+        }
     }
 }
