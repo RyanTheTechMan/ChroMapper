@@ -15,7 +15,8 @@ public class PlatformListManager : MonoBehaviour
 
     private int _environmentLength;
     private int _customPlatLength;
-    
+    private float _testNum;
+
     void Start()
     {
         GameObject customPlats = transform.GetChild(1).gameObject;
@@ -30,23 +31,22 @@ public class PlatformListManager : MonoBehaviour
 
         _environmentLength = transform.GetChild(0).transform.childCount + 1;
         _customPlatLength = customPlats.transform.childCount;
+
+        const int offset = -1;
+        _testNum = (float) (_environmentLength + offset) / (_environmentLength + _customPlatLength);
     }
-
-
-    private static readonly Vector3 EPos = new Vector3(0,-49,0);
-    private static readonly Vector3 CPos = new Vector3(0,-8,0);
-
-    private bool lastSectionBool;
+    
+    private bool _lastSectionBool;
     private Coroutine _moveUpCoroutine;
     
     private void LateUpdate()
     {
-        bool b = 1 - _scrollbar.value >= (float)_environmentLength / (_environmentLength + _customPlatLength);
+        bool b = 1 - _scrollbar.value >= _testNum;
         
-        if (lastSectionBool != b)
+        if (_lastSectionBool != b)
         {
             _moveUpCoroutine = StartCoroutine(MoveSectionTitle(b));
-            lastSectionBool = b;
+            _lastSectionBool = b;
         }
     }
     
@@ -55,18 +55,32 @@ public class PlatformListManager : MonoBehaviour
         if(_moveUpCoroutine != null) StopCoroutine(_moveUpCoroutine);
         
         float startTime = Time.time;
+
+        const float randomOffset = 12;
+        const float cPos = -3f+randomOffset;
+        const float ePos = -45.5f+randomOffset;
         
         while (true)
         {
-            catTitle.localPosition = Vector3.Lerp(catTitle.localPosition, moveUp ? CPos : EPos, (Time.time / startTime) * 0.2f);
-            if (catTitle.localPosition == CPos)
+            var localPosition = catTitle.localPosition;
+            float pos = localPosition.y;
+            pos = Mathf.Lerp(pos, moveUp ? cPos : ePos, (Time.time / startTime) * 0.2f);
+            Vector3 v = localPosition;
+            v.y = pos;
+            localPosition = v;
+            catTitle.localPosition = localPosition;
+            if (moveUp && pos >= cPos)
             {
-                catTitle.localPosition = CPos;
+                v.y = cPos;
+                localPosition = v;
+                catTitle.localPosition = localPosition;
                 yield break;
             }
-            else if (catTitle.localPosition == EPos)
+            else if (!moveUp && pos <= ePos)
             {
-                catTitle.localPosition = EPos;
+                v.y = ePos;
+                localPosition = v;
+                catTitle.localPosition = localPosition;
                 yield break;
             }
             yield return new WaitForFixedUpdate();
