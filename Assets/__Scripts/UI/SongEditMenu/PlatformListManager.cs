@@ -41,6 +41,8 @@ public class PlatformListManager : MonoBehaviour
     
     private void LateUpdate()
     {
+        if(_customPlatLength == 0) return;
+
         bool b = 1 - _scrollbar.value >= _testNum;
         
         if (_lastSectionBool != b)

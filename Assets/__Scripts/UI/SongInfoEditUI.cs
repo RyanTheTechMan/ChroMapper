@@ -67,15 +67,15 @@ public class SongInfoEditUI : MonoBehaviour {
         get => songDifficultySets.FirstOrDefault(x => x.beatmapCharacteristicName == selectedBeatmapSet);
     }
 
-    [SerializeField] InputField nameField;
-    [SerializeField] InputField subNameField;
-    [SerializeField] InputField songAuthorField;
-    [SerializeField] InputField authorField;
-    [SerializeField] InputField coverImageField;
+    [SerializeField] TMP_InputField nameField;
+    [SerializeField] TMP_InputField subNameField;
+    [SerializeField] TMP_InputField songAuthorField;
+    [SerializeField] TMP_InputField authorField;
+    [SerializeField] TMP_InputField coverImageField;
 
-    [SerializeField] InputField bpmField;
-    [SerializeField] InputField prevStartField;
-    [SerializeField] InputField prevDurField;
+    [SerializeField] TMP_InputField bpmField;
+    [SerializeField] TMP_InputField prevStartField;
+    [SerializeField] TMP_InputField prevDurField;
     
     [SerializeField] TMP_Dropdown environmentDropdown;
     [SerializeField] TMP_Dropdown customPlatformsDropdown;
@@ -94,7 +94,7 @@ public class SongInfoEditUI : MonoBehaviour {
     [SerializeField] GameObject difficultyNoExistPanel;
     [SerializeField] TMP_Dropdown difficultyDifficultyDropdown;
 
-    [SerializeField] InputField audioPath;
+    [SerializeField] TMP_InputField audioPath;
     [SerializeField] InputField offset;
     [SerializeField] InputField difficultyLabel;
     [SerializeField] InputField noteJumpSpeed;
