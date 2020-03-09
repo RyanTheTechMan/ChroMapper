@@ -100,10 +100,12 @@ public class SongInfoEditUI : MonoBehaviour {
     [SerializeField] InputField noteJumpSpeed;
     [SerializeField] InputField startBeatOffset;
 
-    [SerializeField] Button difficultyRevertButton;
-    [SerializeField] Button difficultySaveButton;
+    //[SerializeField] Button difficultyRevertButton;
+    //[SerializeField] Button difficultySaveButton;
 
-    [SerializeField] Button editMapButton;
+    //[SerializeField] Button editMapButton;
+    
+    [SerializeField] Image revertInfoButtonImage;
 
     void Start () {
 		if (BeatSaberSongContainer.Instance == null) {
@@ -156,8 +158,12 @@ public class SongInfoEditUI : MonoBehaviour {
         PersistentUI.Instance.DisplayMessage("Song Info Saved!", PersistentUI.DisplayMessageType.BOTTOM);
     }
 
-    public void LoadFromSong(bool initial) {
-        
+    private Coroutine _reloadSongDataCoroutine;
+    
+    public void LoadFromSong(bool initial)
+    {
+        if(!initial) _reloadSongDataCoroutine = StartCoroutine(SpinReloadSongDataButton());
+        return;
         nameField.text = Song.songName;
         subNameField.text = Song.songSubName;
         songAuthorField.text = Song.songAuthorName;
@@ -208,12 +214,44 @@ public class SongInfoEditUI : MonoBehaviour {
             characteristicDropdown.value = CharacteristicDropdownToBeatmapName.IndexOf(selectedBeatmapSet);
         }
 
-        if (initial) {
-            InitializeDifficultyPanel();
-        }
-
+        if (initial) InitializeDifficultyPanel();
     }
-
+    
+    private IEnumerator SpinReloadSongDataButton()
+    {
+        if(_reloadSongDataCoroutine != null) StopCoroutine(_reloadSongDataCoroutine);
+        
+        float startTime = Time.time;
+        var transform1 = revertInfoButtonImage.transform;
+        Quaternion rotationQ = transform1.rotation;
+        Vector3 rotation = rotationQ.eulerAngles;
+        rotation.z = -110;
+        transform1.rotation = Quaternion.Euler(rotation);
+        
+        revertInfoButtonImage.fillAmount = 0;
+        float fillAmount = revertInfoButtonImage.fillAmount;
+        
+        while (true)
+        {
+            float rot = rotation.z;
+            float timing = (Time.time / startTime) * 0.075f;
+            rot = Mathf.Lerp(rot, 318f, timing);
+            fillAmount = Mathf.Lerp(fillAmount, 1f, timing);
+            revertInfoButtonImage.fillAmount = fillAmount;
+            rotation.z = rot;
+            transform1.rotation = Quaternion.Euler(rotation);
+            
+            if (rot >= 314f)
+            {
+                rotation.z = -45;
+                transform1.rotation = Quaternion.Euler(rotation);
+                revertInfoButtonImage.fillAmount = 1;
+                yield break;
+            }
+            yield return new WaitForFixedUpdate();
+        }
+    }
+    
     public void SelectDifficulty(int index) {
 
         if (index >= songDifficultyData.Count || index < 0) {
