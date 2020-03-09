@@ -163,7 +163,7 @@ public class SongInfoEditUI : MonoBehaviour {
     public void LoadFromSong(bool initial)
     {
         if(!initial) _reloadSongDataCoroutine = StartCoroutine(SpinReloadSongDataButton());
-        return;
+        
         nameField.text = Song.songName;
         subNameField.text = Song.songSubName;
         songAuthorField.text = Song.songAuthorName;
