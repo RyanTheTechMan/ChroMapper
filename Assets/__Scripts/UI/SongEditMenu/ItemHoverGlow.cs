@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemHoverGlow : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+public class ItemHoverGlow : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     private CanvasGroup hoverBox;
     private Coroutine _hoverCoroutine;
@@ -12,11 +12,6 @@ public class ItemHoverGlow : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     private void Start()
     {
         hoverBox = GetComponentInChildren<CanvasGroup>();
-    }
-
-    void Update()
-    {
-        
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -27,11 +22,6 @@ public class ItemHoverGlow : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void OnPointerExit(PointerEventData eventData)
     {
         _hoverCoroutine = StartCoroutine(FadeHoverBox(false));
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        
     }
 
     private IEnumerator FadeHoverBox(bool show)

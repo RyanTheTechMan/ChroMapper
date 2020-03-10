@@ -95,7 +95,7 @@ public class SongInfoEditUI : MonoBehaviour {
     [SerializeField] TMP_Dropdown difficultyDifficultyDropdown;
 
     [SerializeField] TMP_InputField audioPath;
-    [SerializeField] InputField offset;
+    [SerializeField] TMP_InputField offset;
     [SerializeField] InputField difficultyLabel;
     [SerializeField] InputField noteJumpSpeed;
     [SerializeField] InputField startBeatOffset;
