@@ -197,6 +197,12 @@ TextureImporter:
   - first:
       213: 21300128
     second: AddIcon
+  - first:
+      213: -4073845044900155985
+    second: unused_Line
+  - first:
+      213: -5016360678734447577
+    second: unused_1
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -1893,10 +1899,52 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: unused_Line
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 904
+        width: 60
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fadadbc048bc677c0800000000000000
+      internalID: -4073845044900155985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unused_1
+      rect:
+        serializedVersion: 2
+        x: 1157
+        y: 188
+        width: 38
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72cbbce5a8e426ab0800000000000000
+      internalID: -5016360678734447577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: a0f217938ad69da4fbf0ad916b800dbc
     internalID: 0
     vertices: []
     indices: 
