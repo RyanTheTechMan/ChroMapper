@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -7,16 +9,32 @@ public class DifficultySelectorHandler : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] private RectTransform _selectedGameObject;
     private Coroutine _moveSelectArrowCoroutine;
+
+    private SelectItemFromList _selectItemFromList;
+    private TextMeshProUGUI text;
+    private int myIndex;
     
     void Start()
     {
+        text = gameObject.GetComponentInChildren<TextMeshProUGUI>();
         
+        _selectItemFromList = GetComponentInParent<SelectItemFromList>();
+        _selectItemFromList.OnSelect += ShowOrHide;
+        myIndex = transform.GetSiblingIndex();
+    }
+
+    private void ShowOrHide(int index)
+    {
+        Color color = text.color;
+        color.a = index == myIndex ? 1 : .5f;
+        text.color = color;
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
         _selectedGameObject.SetParent(transform, true);
         _moveSelectArrowCoroutine = StartCoroutine(MoveSelectArrow());
+        _selectItemFromList.SetSelected(transform.GetSiblingIndex());
     }
     
     private IEnumerator MoveSelectArrow()
@@ -40,4 +58,5 @@ public class DifficultySelectorHandler : MonoBehaviour, IPointerClickHandler
             yield return new WaitForFixedUpdate();
         }
     }
+    
 }

@@ -77,10 +77,10 @@ public class SongInfoEditUI : MonoBehaviour {
     [SerializeField] TMP_InputField prevStartField;
     [SerializeField] TMP_InputField prevDurField;
     
-    [SerializeField] TMP_Dropdown environmentDropdown;
-    [SerializeField] TMP_Dropdown customPlatformsDropdown;
-    [SerializeField] TMP_Dropdown difficultyLevelSelectDropdown;
-    [SerializeField] TMP_Dropdown characteristicDropdown;
+    [SerializeField] SelectItemFromList customPlatformsList;
+    [SerializeField] SelectItemFromList environmentList;
+    
+    [SerializeField] SelectItemFromList characteristicList;
 
     [SerializeField] List<BeatSaberSong.DifficultyBeatmap> songDifficultyData = new List<BeatSaberSong.DifficultyBeatmap>();
     [SerializeField] List<BeatSaberSong.DifficultyBeatmapSet> songDifficultySets = new List<BeatSaberSong.DifficultyBeatmapSet>();
@@ -92,7 +92,7 @@ public class SongInfoEditUI : MonoBehaviour {
 
     [SerializeField] GameObject difficultyExistsPanel;
     [SerializeField] GameObject difficultyNoExistPanel;
-    [SerializeField] TMP_Dropdown difficultyDifficultyDropdown;
+    [SerializeField] SelectItemFromList difficultyList;
 
     [SerializeField] TMP_InputField audioPath;
     [SerializeField] TMP_InputField offset;
@@ -137,7 +137,7 @@ public class SongInfoEditUI : MonoBehaviour {
                 PersistentUI.DialogBoxPresetType.Ok);
         }
 
-        Song.environmentName = GetEnvironmentNameFromID(environmentDropdown.value);
+        /*Song.environmentName = GetEnvironmentNameFromID(environmentDropdown.value);
 
         if (Song.customData == null) Song.customData = new JSONObject();
 
@@ -152,7 +152,7 @@ public class SongInfoEditUI : MonoBehaviour {
         {
             Song.customData.Remove("_customEnvironment");
             Song.customData.Remove("_customEnvironmentHash");
-        }
+        }*/
 
         Song.SaveSong();
         PersistentUI.Instance.DisplayMessage("Song Info Saved!", PersistentUI.DisplayMessageType.BOTTOM);
@@ -182,7 +182,9 @@ public class SongInfoEditUI : MonoBehaviour {
         prevStartField.text = Song.previewStartTime.ToString(CultureInfo.InvariantCulture);
         prevDurField.text = Song.previewDuration.ToString(CultureInfo.InvariantCulture);
 
-        environmentDropdown.ClearOptions();
+        
+        
+        /*environmentDropdown.ClearOptions();
         environmentDropdown.AddOptions(VanillaEnvironments);
         environmentDropdown.value = GetEnvironmentIDFromString(Song.environmentName);
 
@@ -205,13 +207,13 @@ public class SongInfoEditUI : MonoBehaviour {
             customPlatformsDropdown.value = 0;
             customPlatformsDropdown.captionText.text = "None";
         }
-
+*/
         if (Song.difficultyBeatmapSets.Any())
         {
             songDifficultySets = Song.difficultyBeatmapSets;
             songDifficultyData = songDifficultySets.First().difficultyBeatmaps;
             selectedBeatmapSet = songDifficultySets.First().beatmapCharacteristicName;
-            characteristicDropdown.value = CharacteristicDropdownToBeatmapName.IndexOf(selectedBeatmapSet);
+            characteristicList.value = CharacteristicDropdownToBeatmapName.IndexOf(selectedBeatmapSet);
         }
 
         if (initial) InitializeDifficultyPanel();
@@ -258,9 +260,8 @@ public class SongInfoEditUI : MonoBehaviour {
             ShowDifficultyEditPanel(false);
             return;
         }
-        difficultyDifficultyDropdown.value = difficultyDifficultyDropdown.options.IndexOf(
-            difficultyDifficultyDropdown.options.Where(x => x.text == songDifficultyData[index].difficulty).FirstOrDefault());
-        difficultyDifficultyDropdown.captionText.text = songDifficultyData[index].difficulty;
+        difficultyList.value = difficultyList.options.IndexOf(difficultyList.options.FirstOrDefault(x => x == songDifficultyData[index].difficulty));
+        difficultyList.name = songDifficultyData[index].difficulty;
         selectedDifficultyIndex = index;
         LoadDifficulty();
         ShowDifficultyEditPanel(true);
@@ -272,7 +273,7 @@ public class SongInfoEditUI : MonoBehaviour {
 
         BeatSaberMap map = Song.GetMapFromDifficultyBeatmap(songDifficultyData[selectedDifficultyIndex]);
         string oldPath = map?.directoryAndFile;
-        switch (difficultyDifficultyDropdown.value)
+        switch (difficultyList.value)
         {
             case 0:
                 songDifficultyData[selectedDifficultyIndex].difficulty = "Easy";
@@ -349,22 +350,22 @@ public class SongInfoEditUI : MonoBehaviour {
 
         switch (songDifficultyData[selectedDifficultyIndex].difficulty) {
             case "Easy":
-                difficultyDifficultyDropdown.value = 0;
+                difficultyList.value = 0;
                 break;
             case "Normal":
-                difficultyDifficultyDropdown.value = 1;
+                difficultyList.value = 1;
                 break;
             case "Hard":
-                difficultyDifficultyDropdown.value = 2;
+                difficultyList.value = 2;
                 break;
             case "Expert":
-                difficultyDifficultyDropdown.value = 3;
+                difficultyList.value = 3;
                 break;
             case "ExpertPlus":
-                difficultyDifficultyDropdown.value = 4;
+                difficultyList.value = 4;
                 break;
             default:
-                difficultyDifficultyDropdown.value = 0;
+                difficultyList.value = 0;
                 break;
         }
         CalculateHalfJump();
@@ -411,18 +412,15 @@ public class SongInfoEditUI : MonoBehaviour {
     }
 
     public void InitializeDifficultyPanel(int index = 0) {
-        difficultyLevelSelectDropdown.ClearOptions();
-        List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>();
-        for (int i = 0; i < songDifficultyData.Count; i++) {
-            options.Add(new TMP_Dropdown.OptionData(songDifficultyData[i].difficulty));
-        }
-        difficultyLevelSelectDropdown.AddOptions(options);
+        difficultyList.ClearOptions();
+        List<TMP_Dropdown.OptionData> options = songDifficultyData.Select(t => new TMP_Dropdown.OptionData(t.difficulty)).ToList();
+        difficultyList.AddOptions(options);
         SelectDifficulty(index);
     }
 
     public void UpdateCharacteristicSet()
     {
-        selectedBeatmapSet = CharacteristicDropdownToBeatmapName[characteristicDropdown.value];
+        selectedBeatmapSet = CharacteristicDropdownToBeatmapName[characteristicList.value];
         if (SelectedSet != null)
         {;
             songDifficultyData = SelectedSet.difficultyBeatmaps;
@@ -448,7 +446,7 @@ public class SongInfoEditUI : MonoBehaviour {
     }
 
     public void UpdateDifficultyPanel() {
-        SelectDifficulty(difficultyLevelSelectDropdown.value);
+        SelectDifficulty(difficultyList.value);
     }
 
     public void ShowDifficultyEditPanel(bool b) {
