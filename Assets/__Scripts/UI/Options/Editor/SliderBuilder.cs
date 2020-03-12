@@ -102,6 +102,9 @@ public class SliderBuilder : SettingsBinder
             if (valueToChangeVal == -1) valueToChangeVal = 0;
             _slider.valueToChange = possibleValues[EditorGUILayout.Popup("On Value Change Set", valueToChangeVal, possibleValues.ToArray())];
             
+            
+            
+            
             EditorGUILayout.Separator();
             EditorGUILayout.Separator();
 

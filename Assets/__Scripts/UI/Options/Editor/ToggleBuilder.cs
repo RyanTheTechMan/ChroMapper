@@ -37,9 +37,9 @@ public class ToggleBuilder : SettingsBinder
             if (valueToChangeVal == -1) valueToChangeVal = 0;
             _toggle.valueToChange = possibleValues[EditorGUILayout.Popup("On Value Change Set", valueToChangeVal, possibleValues.ToArray())];
             
-            serializedObject.Update();
+            //serializedObject.Update();
             //EditorGUILayout.PropertyField(serializedObject.FindProperty("onValueChanged"), false);
-            serializedObject.ApplyModifiedProperties();
+            //serializedObject.ApplyModifiedProperties();
             EditorGUILayout.Space();
             EditorGUILayout.Space();
             showHiddenSettings = EditorGUILayout.Toggle("Show Hidden Settings", showHiddenSettings);

@@ -7,7 +7,7 @@ using UnityEngine;
 
 public abstract class SettingsBinder : Editor
 {
-    protected Dictionary<string, FieldInfo> AllFieldInfos = GetAllFieldInfos();
+    protected readonly Dictionary<string, FieldInfo> AllFieldInfos = GetAllFieldInfos();
 
     public virtual object ModifyValue(object value) { return value; }
 
@@ -16,6 +16,7 @@ public abstract class SettingsBinder : Editor
         
         Type type = typeof(Settings);
         MemberInfo[] infos = type.GetMembers(BindingFlags.Public | BindingFlags.Instance);
+        
         foreach (MemberInfo info in infos)
         {
             if (!(info is FieldInfo field)) continue;

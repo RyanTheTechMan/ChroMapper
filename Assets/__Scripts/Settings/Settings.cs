@@ -22,7 +22,7 @@ public class Settings {
     [BetterSlider] public int EditorScale = 4;
     [BetterSlider] public int ChunkDistance = 5;
     [BetterInputField] public int AutoSaveInterval = 5;
-    [BetterInputField] public int InitialLoadBatchSize = 100;
+    [BetterSlider] public int InitialLoadBatchSize = 100;
     [BetterToggle] public bool InvertNoteControls = false;
     [BetterToggle] public bool WaveformGenerator = false;
     [BetterToggle] public bool CountersPlus = false;
