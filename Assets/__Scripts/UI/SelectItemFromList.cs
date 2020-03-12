@@ -6,6 +6,9 @@ using UnityEngine.EventSystems;
 
 public class SelectItemFromList : MonoBehaviour
 {
+
+    [SerializeField] private GameObject _textPrefab;
+    
     public int value
     {
         set
@@ -48,8 +51,14 @@ public class SelectItemFromList : MonoBehaviour
         }
     }
 
-    public void AddOptions(List<TMP_Dropdown.OptionData> optionDatas)
+    public void AddOptions(List<string> options)
     {
-        throw new NotImplementedException();
+        foreach (string o in options)
+        { 
+            GameObject go = Instantiate(_textPrefab, transform);
+            go.GetComponentInChildren<TextMeshProUGUI>().text = o;
+        }
+       
+        
     }
 }

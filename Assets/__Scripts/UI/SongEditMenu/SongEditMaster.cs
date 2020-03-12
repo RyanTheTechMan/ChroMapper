@@ -78,6 +78,8 @@ public class SongEditMaster : MonoBehaviour
     
     [SerializeField] private Image revertInfoButtonImage;
     #endregion
+
+    public DifficultyPanel DifficultyPanel = DifficultyPanel.Instance;
     
     
     //public SongEditMaster songEditInstance => this;
@@ -159,7 +161,7 @@ public class SongEditMaster : MonoBehaviour
             characteristicList.value = CharacteristicDropdownToBeatmapName.IndexOf(selectedBeatmapSet);
         }
 
-        if (initial) InitializeDifficultyPanel();
+        if (initial) DifficultyPanel.InitializeDifficultyPanel();
     }
     #endregion
     

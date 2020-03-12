@@ -9,10 +9,11 @@ using UnityEngine.UIElements;
 
 public class DifficultyPanel : SongEditMaster
 {
+    public static DifficultyPanel Instance;
 
-    private void Start()
+    private void Awake()
     {
-
+        Instance = this;
     }
 
     public void SaveDifficulty()
@@ -77,7 +78,7 @@ public class DifficultyPanel : SongEditMaster
         songDifficultySets.Add(SelectedSet);
         Song.difficultyBeatmapSets = songDifficultySets.Distinct().Where(x => x.difficultyBeatmaps.Any()).ToList();
         Song.SaveSong();
-        InitializeDifficultyPanel(selectedDifficultyIndex);
+        //InitializeDifficultyPanel(selectedDifficultyIndex);
     }
 
     private bool HasChromaEvents()
@@ -91,5 +92,76 @@ public class DifficultyPanel : SongEditMaster
         return map != null && (map._notes.Any(note => note._lineIndex < 0 || note._lineIndex > 3) ||
                                map._obstacles.Any(ob =>
                                    ob._lineIndex < 0 || ob._lineIndex > 3 || ob._type >= 2 || ob._width >= 1000));
+    }
+    
+    public void InitializeDifficultyPanel(int index = 0) {
+        difficultyList.ClearOptions();
+        difficultyList.AddOptions(songDifficultyData.Select(t => t.difficulty).ToList());
+        SelectDifficulty(index);
+    }
+    
+    public void SelectDifficulty(int index) {
+
+        if (index >= songDifficultyData.Count || index < 0) {
+            //ShowDifficultyEditPanel(false);
+            return;
+        }
+        difficultyList.value = difficultyList.options.IndexOf(difficultyList.options.FirstOrDefault(x => x == songDifficultyData[index].difficulty));
+        difficultyList.name = songDifficultyData[index].difficulty;
+        selectedDifficultyIndex = index;
+        LoadDifficulty();
+        //ShowDifficultyEditPanel(true);
+    }
+    
+    public void LoadDifficulty() {
+        difficultyLabel.text = "";
+        if (songDifficultyData[selectedDifficultyIndex].customData != null)
+        {
+            if (songDifficultyData[selectedDifficultyIndex].customData["_difficultyLabel"] != null)
+                difficultyLabel.text = songDifficultyData[selectedDifficultyIndex].customData["_difficultyLabel"].Value;
+        }
+        noteJumpSpeed.text = songDifficultyData[selectedDifficultyIndex].noteJumpMovementSpeed.ToString();
+        startBeatOffset.text = songDifficultyData[selectedDifficultyIndex].noteJumpStartBeatOffset.ToString();
+
+        switch (songDifficultyData[selectedDifficultyIndex].difficulty) {
+            case "Easy":
+                difficultyList.value = 0;
+                break;
+            case "Normal":
+                difficultyList.value = 1;
+                break;
+            case "Hard":
+                difficultyList.value = 2;
+                break;
+            case "Expert":
+                difficultyList.value = 3;
+                break;
+            case "ExpertPlus":
+                difficultyList.value = 4;
+                break;
+            default:
+                difficultyList.value = 0;
+                break;
+        }
+        CalculateHalfJump();
+    }
+
+    public void CalculateHalfJump()
+    {
+        float num = 60f / Song.beatsPerMinute;
+        float halfJumpDuration = 4;
+        float songNoteJumpSpeed = songDifficultyData[selectedDifficultyIndex].noteJumpMovementSpeed;
+        float songStartBeatOffset = songDifficultyData[selectedDifficultyIndex].noteJumpStartBeatOffset;
+
+        while (songNoteJumpSpeed * num * halfJumpDuration > 18)
+            halfJumpDuration /= 2;
+
+        halfJumpDuration += songStartBeatOffset;
+
+        if (halfJumpDuration < 1) halfJumpDuration = 1;
+        float jumpDistance = songNoteJumpSpeed * num * halfJumpDuration * 2;
+
+        HalfJumpDurationText.text = halfJumpDuration.ToString();
+        JumpDistanceText.text = jumpDistance.ToString();
     }
 }

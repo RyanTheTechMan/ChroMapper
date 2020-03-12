@@ -413,8 +413,7 @@ public class SongInfoEditUI : MonoBehaviour {
 
     public void InitializeDifficultyPanel(int index = 0) {
         difficultyList.ClearOptions();
-        List<TMP_Dropdown.OptionData> options = songDifficultyData.Select(t => new TMP_Dropdown.OptionData(t.difficulty)).ToList();
-        difficultyList.AddOptions(options);
+        difficultyList.AddOptions(songDifficultyData.Select(t => t.difficulty).ToList());
         SelectDifficulty(index);
     }
 
