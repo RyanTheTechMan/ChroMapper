@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using UnityEditor;
 using UnityEngine;
 
 public class PauseManager : MonoBehaviour {
@@ -78,20 +79,64 @@ public class PauseManager : MonoBehaviour {
         {
             saveController.Save();
             #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
+                EditorApplication.isPlaying = false;
             #else
                 Application.Quit();
             #endif
+            _readyToQuit = true;
         }
-        else if (result == 1) //Middle button (ID 1) clicked; the user does not want to save before exiting.
+        else if (result == 1){ //Middle button (ID 1) clicked; the user does not want to save before exiting.
             #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
+                EditorApplication.isPlaying = false;
             #else
                 Application.Quit();
             #endif
+            _readyToQuit = true;
+        }
+        else _readyToQuit = false;
         //Right button (ID 2) would be clicked; the user does not want to exit the editor after all, so we aint doing shit.
     }
 
+    private static bool _readyToQuit = false;
+
+    [RuntimeInitializeOnLoadMethod]
+    static void RunOnStart() { 
+        Application.wantsToQuit += WantsToQuit;
+    }
+    
+    private static bool WantsToQuit()
+    {
+        if (_readyToQuit) return true;
+        _readyToQuit = false;
+        PersistentUI.Instance.ShowDialogBox("Do you want to save before quiting ChroMapper?",
+            SaveAndQuitCMResultStatic, PersistentUI.DialogBoxPresetType.YesNoCancel);
+        return false;
+    }
+    
+    private static void SaveAndQuitCMResultStatic(int result)
+    {
+        if (result == 0) //Left button (ID 0) clicked; the user wants to Save before exiting.
+        {
+            FindObjectOfType<AutoSaveController>().Save();
+#if UNITY_EDITOR
+            EditorApplication.isPlaying = false;
+#else
+                Application.Quit();
+#endif
+            _readyToQuit = true;
+        }
+        else if (result == 1){ //Middle button (ID 1) clicked; the user does not want to save before exiting.
+#if UNITY_EDITOR
+            EditorApplication.isPlaying = false;
+#else
+                Application.Quit();
+#endif
+            _readyToQuit = true;
+        }
+        else _readyToQuit = false;
+        //Right button (ID 2) would be clicked; the user does not want to exit the editor after all, so we aint doing shit.
+    }
+    
     #region Transitions (Totally not ripped from PersistentUI)
     IEnumerator TransitionMenu()
     {
