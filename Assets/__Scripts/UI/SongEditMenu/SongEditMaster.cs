@@ -9,10 +9,7 @@ using UnityEngine.UI;
 
 public class SongEditMaster : MonoBehaviour
 {
-    
-    
-    
-    private static readonly List<string> VanillaEnvironments = new List<string>()
+    private static readonly List<string> VanillaEnvironments = new List<string>
     {
         "DefaultEnvironment",
         "BigMirrorEnvironment",
@@ -27,12 +24,12 @@ public class SongEditMaster : MonoBehaviour
         "RocketEnvironment"
     };
 
-    private static readonly List<string> VanillaDirectionalEnvironments = new List<string>()
+    private static readonly List<string> VanillaDirectionalEnvironments = new List<string>
     {
         "GlassDesertEnvironment"
     };
 
-    public static readonly List<string> CharacteristicDropdownToBeatmapName = new List<string>()
+    public static readonly List<string> CharacteristicDropdownToBeatmapName = new List<string>
     {
         "Standard",
         "NoArrows",
@@ -42,9 +39,7 @@ public class SongEditMaster : MonoBehaviour
         "Lightshow",
         "Lawless"
     };
-
-
-
+    
 
     #region Unity Objects
     public TMP_InputField nameField;
@@ -88,11 +83,19 @@ public class SongEditMaster : MonoBehaviour
     //public SongEditMaster songEditInstance => this;
 
     #region Shared Variables
-    protected BeatSaberSong Song => BeatSaberSongContainer.Instance.song;
+    protected BeatSaberSong Song => _song ?? (_song = BeatSaberSongContainer.Instance.song);
     protected BeatSaberSong.DifficultyBeatmapSet SelectedSet => songDifficultySets.FirstOrDefault(x => x.beatmapCharacteristicName == selectedBeatmapSet);
-    protected BeatSaberMap map => Song.GetMapFromDifficultyBeatmap(SelectedDifficultyData);
+    protected BeatSaberMap map
+    {
+        get => _map ?? (_map = Song.GetMapFromDifficultyBeatmap(SelectedDifficultyData));
+        set => _map = value;
+    }
+
     protected BeatSaberSong.DifficultyBeatmap SelectedDifficultyData => songDifficultyData[selectedDifficultyIndex];
     #endregion
+
+    private BeatSaberSong _song;
+    private BeatSaberMap _map;
     
     private void Start() {
         if (BeatSaberSongContainer.Instance == null) {SceneManager.LoadScene(0); return;}

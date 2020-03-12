@@ -17,10 +17,9 @@ public class DifficultyPanel : SongEditMaster
 
     public void SaveDifficulty()
     {
-        if (songDifficultyData[selectedDifficultyIndex].customData == null)
-            songDifficultyData[selectedDifficultyIndex].customData = new JSONObject();
+        if (SelectedDifficultyData.customData == null)
+            SelectedDifficultyData.customData = new JSONObject();
 
-        BeatSaberMap map = this.map;
         string oldPath = map?.directoryAndFile;
         switch (difficultyList.value)
         {
@@ -55,7 +54,7 @@ public class DifficultyPanel : SongEditMaster
 
         if (map is null) map = new BeatSaberMap {mainNode = new JSONObject()};
         
-        map.directoryAndFile = $"{Song.directory}\\{songDifficultyData[selectedDifficultyIndex].beatmapFilename}";
+        map.directoryAndFile = $"{Song.directory}\\{SelectedDifficultyData.beatmapFilename}";
         if (File.Exists(oldPath) && oldPath != map.directoryAndFile && !File.Exists(map.directoryAndFile))
             File.Move(oldPath, map.directoryAndFile); //This should properly "convert" difficulties just fine
         else map.Save();
@@ -83,14 +82,12 @@ public class DifficultyPanel : SongEditMaster
 
     private bool HasChromaEvents()
     {
-        BeatSaberMap map = this.map;
         return !(map is null) && map._events.Any(mapEvent => mapEvent._value > ColourManager.RGB_INT_OFFSET);
     }
     
     private bool HasMappingExtensionsObjects()
     {
-        if (songDifficultyData[selectedDifficultyIndex] == null) return false;
-        BeatSaberMap map = this.map;
+        if (SelectedDifficultyData == null) return false;
         return map != null && (map._notes.Any(note => note._lineIndex < 0 || note._lineIndex > 3) ||
                                map._obstacles.Any(ob =>
                                    ob._lineIndex < 0 || ob._lineIndex > 3 || ob._type >= 2 || ob._width >= 1000));
