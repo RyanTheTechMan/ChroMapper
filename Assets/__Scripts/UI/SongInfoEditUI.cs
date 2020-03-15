@@ -82,9 +82,9 @@ public class SongInfoEditUI : MonoBehaviour {
     
     [SerializeField] SelectItemFromList characteristicList;
 
-    [SerializeField] List<BeatSaberSong.DifficultyBeatmap> songDifficultyData = new List<BeatSaberSong.DifficultyBeatmap>();
+    [SerializeField] public List<BeatSaberSong.DifficultyBeatmap> songDifficultyData = new List<BeatSaberSong.DifficultyBeatmap>();
     [SerializeField] List<BeatSaberSong.DifficultyBeatmapSet> songDifficultySets = new List<BeatSaberSong.DifficultyBeatmapSet>();
-    [SerializeField] int selectedDifficultyIndex = -1;
+    [SerializeField] public int selectedDifficultyIndex = -1;
     [SerializeField] string selectedBeatmapSet = "Standard";
     [SerializeField] Toggle WillChromaBeRequired;
     [SerializeField] TextMeshProUGUI HalfJumpDurationText;
@@ -92,13 +92,12 @@ public class SongInfoEditUI : MonoBehaviour {
 
     [SerializeField] GameObject difficultyExistsPanel;
     [SerializeField] GameObject difficultyNoExistPanel;
-    [SerializeField] SelectItemFromList difficultyList;
+    [SerializeField] public SelectItemFromList difficultyList;
 
     [SerializeField] TMP_InputField audioPath;
     [SerializeField] TMP_InputField offset;
-    [SerializeField] InputField difficultyLabel;
-    [SerializeField] InputField noteJumpSpeed;
-    [SerializeField] InputField startBeatOffset;
+    [SerializeField] TMP_InputField noteJumpSpeed;
+    [SerializeField] TMP_InputField startBeatOffset;
 
     //[SerializeField] Button difficultyRevertButton;
     //[SerializeField] Button difficultySaveButton;
@@ -255,16 +254,10 @@ public class SongInfoEditUI : MonoBehaviour {
     }
     
     public void SelectDifficulty(int index) {
-
-        if (index >= songDifficultyData.Count || index < 0) {
-            ShowDifficultyEditPanel(false);
-            return;
-        }
         difficultyList.value = difficultyList.options.IndexOf(difficultyList.options.FirstOrDefault(x => x == songDifficultyData[index].difficulty));
         difficultyList.name = songDifficultyData[index].difficulty;
         selectedDifficultyIndex = index;
         LoadDifficulty();
-        ShowDifficultyEditPanel(true);
     }
 
     public void SaveDifficulty() {
@@ -315,10 +308,10 @@ public class SongInfoEditUI : MonoBehaviour {
         else map.Save();
         songDifficultyData[selectedDifficultyIndex].noteJumpMovementSpeed = float.Parse(noteJumpSpeed.text);
         songDifficultyData[selectedDifficultyIndex].noteJumpStartBeatOffset = float.Parse(startBeatOffset.text);
-        if (difficultyLabel.text != "")
+        /*if (difficultyLabel.text != "")
             songDifficultyData[selectedDifficultyIndex].customData["_difficultyLabel"] = difficultyLabel.text;
         else songDifficultyData[selectedDifficultyIndex].customData.Remove("_difficultyLabel");
-
+*/
         JSONArray requiredArray = new JSONArray();
         JSONArray suggestedArray = new JSONArray();
         if (WillChromaBeRequired.isOn && HasChromaEvents()) requiredArray.Add(new JSONString("Chroma Lighting Events"));
@@ -338,13 +331,13 @@ public class SongInfoEditUI : MonoBehaviour {
         InitializeDifficultyPanel(selectedDifficultyIndex);
     }
 
-    public void LoadDifficulty() {
-        difficultyLabel.text = "";
-        if (songDifficultyData[selectedDifficultyIndex].customData != null)
+    public void LoadDifficulty()
+    {
+        /*if (songDifficultyData[selectedDifficultyIndex].customData != null)
         {
             if (songDifficultyData[selectedDifficultyIndex].customData["_difficultyLabel"] != null)
                 difficultyLabel.text = songDifficultyData[selectedDifficultyIndex].customData["_difficultyLabel"].Value;
-        }
+        }*/
         noteJumpSpeed.text = songDifficultyData[selectedDifficultyIndex].noteJumpMovementSpeed.ToString();
         startBeatOffset.text = songDifficultyData[selectedDifficultyIndex].noteJumpStartBeatOffset.ToString();
 
@@ -386,8 +379,8 @@ public class SongInfoEditUI : MonoBehaviour {
         if (halfJumpDuration < 1) halfJumpDuration = 1;
         float jumpDistance = songNoteJumpSpeed * num * halfJumpDuration * 2;
 
-        HalfJumpDurationText.text = halfJumpDuration.ToString();
-        JumpDistanceText.text = jumpDistance.ToString();
+        //HalfJumpDurationText.text = halfJumpDuration.ToString();
+        //JumpDistanceText.text = jumpDistance.ToString();
     }
 
     private bool HasMappingExtensionsObjects()
@@ -447,12 +440,6 @@ public class SongInfoEditUI : MonoBehaviour {
     public void UpdateDifficultyPanel() {
         SelectDifficulty(difficultyList.value);
     }
-
-    public void ShowDifficultyEditPanel(bool b) {
-        difficultyExistsPanel.SetActive(b);
-        difficultyNoExistPanel.SetActive(!b);
-    }
-
 
     public void DeleteMap()
     {
@@ -611,4 +598,35 @@ public class SongInfoEditUI : MonoBehaviour {
         }
     }
 
+    public void OnDifficultySelect(int i, string s)
+    {
+        switch (difficultyList.value)
+        {
+            case 0:
+                songDifficultyData[selectedDifficultyIndex].difficulty = "Easy";
+                songDifficultyData[selectedDifficultyIndex].difficultyRank = 1;
+                break;
+            case 1:
+                songDifficultyData[selectedDifficultyIndex].difficulty = "Normal";
+                songDifficultyData[selectedDifficultyIndex].difficultyRank = 3;
+                break;
+            case 2:
+                songDifficultyData[selectedDifficultyIndex].difficulty = "Hard";
+                songDifficultyData[selectedDifficultyIndex].difficultyRank = 5;
+                break;
+            case 3:
+                songDifficultyData[selectedDifficultyIndex].difficulty = "Expert";
+                songDifficultyData[selectedDifficultyIndex].difficultyRank = 7;
+                break;
+            case 4:
+                songDifficultyData[selectedDifficultyIndex].difficulty = "ExpertPlus";
+                songDifficultyData[selectedDifficultyIndex].difficultyRank = 9;
+                break;
+            default:
+                Debug.Log("Difficulty doesnt seem to exist! Default to Easy...");
+                songDifficultyData[selectedDifficultyIndex].difficulty = "Easy";
+                songDifficultyData[selectedDifficultyIndex].difficultyRank = 1;
+                break;
+        }
+    }
 }

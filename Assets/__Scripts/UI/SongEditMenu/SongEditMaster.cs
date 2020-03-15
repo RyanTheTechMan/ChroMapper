@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -79,7 +79,7 @@ public class SongEditMaster : MonoBehaviour
     [SerializeField] private Image revertInfoButtonImage;
     #endregion
 
-    public DifficultyPanel DifficultyPanel = DifficultyPanel.Instance;
+    private DifficultyPanel DifficultyPanel = DifficultyPanel.Instance;
     
     
     //public SongEditMaster songEditInstance => this;

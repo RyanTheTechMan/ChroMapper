@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -11,16 +12,19 @@ public class DifficultySelectorHandler : MonoBehaviour, IPointerClickHandler
     private Coroutine _moveSelectArrowCoroutine;
 
     private SelectItemFromList _selectItemFromList;
-    private TextMeshProUGUI text;
+    [SerializeField] private TMP_InputField inputField;
+    [SerializeField] private TextMeshProUGUI text;
+    [SerializeField] private TextMeshProUGUI placeHolder;
+    [SerializeField] private SongInfoEditUI _songInfoEditUi;
     private int myIndex;
     
     void Start()
     {
-        text = gameObject.GetComponentInChildren<TextMeshProUGUI>();
-        
         _selectItemFromList = GetComponentInParent<SelectItemFromList>();
         _selectItemFromList.OnSelect += ShowOrHide;
         myIndex = transform.GetSiblingIndex();
+        
+        inputField.onEndEdit.AddListener(s => _songInfoEditUi.OnDifficultySelect(myIndex, s));
     }
 
     private void ShowOrHide(int index)
@@ -30,11 +34,28 @@ public class DifficultySelectorHandler : MonoBehaviour, IPointerClickHandler
         text.color = color;
     }
 
+    public float editWaitTime;
+    
     public void OnPointerClick(PointerEventData eventData)
     {
         _selectedGameObject.SetParent(transform, true);
         _moveSelectArrowCoroutine = StartCoroutine(MoveSelectArrow());
         _selectItemFromList.SetSelected(transform.GetSiblingIndex());
+
+        if (editWaitTime > 0)
+        {
+            inputField.Select();
+            inputField.interactable = true;
+        }
+        
+        editWaitTime = 50f;
+        
+        _songInfoEditUi.difficultyList.value = _songInfoEditUi.difficultyList.options.IndexOf(_songInfoEditUi.difficultyList.options.FirstOrDefault(x => x == _songInfoEditUi.songDifficultyData[myIndex].difficulty));
+        _songInfoEditUi.difficultyList.name = _songInfoEditUi.songDifficultyData[myIndex].difficulty;
+        _songInfoEditUi.selectedDifficultyIndex = myIndex;
+        
+        _songInfoEditUi.LoadDifficulty();
+        
     }
     
     private IEnumerator MoveSelectArrow()
